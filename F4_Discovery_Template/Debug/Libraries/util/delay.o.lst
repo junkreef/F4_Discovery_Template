@@ -1,0 +1,285 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"delay.c"
+  23              	.Ltext0:
+  24              		.file 1 "../Libraries/util/delay.c"
+ 24569              		.align	2
+ 24570              		.global	delay_init
+ 24571              		.thumb
+ 24572              		.thumb_func
+ 24574              	delay_init:
+ 24575              	.LFB110:
+   1:../Libraries/util/delay.c **** /*
+   2:../Libraries/util/delay.c ****  * delay.c
+   3:../Libraries/util/delay.c ****  *
+   4:../Libraries/util/delay.c ****  *  Created on: 2012/10/25
+   5:../Libraries/util/delay.c ****  *      Author: Junpei
+   6:../Libraries/util/delay.c ****  */
+   7:../Libraries/util/delay.c **** 
+   8:../Libraries/util/delay.c **** #include "stm32f4xx.h"
+   9:../Libraries/util/delay.c **** #include "delay.h"
+  10:../Libraries/util/delay.c **** 
+  11:../Libraries/util/delay.c **** void delay_core();
+  12:../Libraries/util/delay.c **** 
+  13:../Libraries/util/delay.c **** TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructureMicro;
+  14:../Libraries/util/delay.c **** TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructureMili;
+  15:../Libraries/util/delay.c **** 
+  16:../Libraries/util/delay.c **** void delay_init(){
+ 24576              		.loc 1 16 0
+ 24577              		.cfi_startproc
+ 24578              		@ args = 0, pretend = 0, frame = 0
+ 24579              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24580 0000 80B5     		push	{r7, lr}
+ 24581              	.LCFI0:
+ 24582              		.cfi_def_cfa_offset 8
+ 24583 0002 00AF     		add	r7, sp, #0
+ 24584              		.cfi_offset 14, -4
+ 24585              		.cfi_offset 7, -8
+ 24586              	.LCFI1:
+ 24587              		.cfi_def_cfa_register 7
+  17:../Libraries/util/delay.c **** 
+  18:../Libraries/util/delay.c **** 	//Enable clock( (AHB_Clock/4) --> APB1_Clock)
+  19:../Libraries/util/delay.c **** 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2,ENABLE);
+ 24588              		.loc 1 19 0
+ 24589 0004 4FF00100 		mov	r0, #1
+ 24590 0008 4FF00101 		mov	r1, #1
+ 24591 000c FFF7FEFF 		bl	RCC_APB1PeriphClockCmd
+  20:../Libraries/util/delay.c **** 
+  21:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMicro.TIM_ClockDivision=TIM_CKD_DIV1;
+ 24592              		.loc 1 21 0
+ 24593 0010 104B     		ldr	r3, .L2
+ 24594 0012 4FF00002 		mov	r2, #0
+ 24595 0016 1A81     		strh	r2, [r3, #8]	@ movhi
+  22:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMicro.TIM_CounterMode=TIM_CounterMode_Up;
+ 24596              		.loc 1 22 0
+ 24597 0018 0E4B     		ldr	r3, .L2
+ 24598 001a 4FF00002 		mov	r2, #0
+ 24599 001e 5A80     		strh	r2, [r3, #2]	@ movhi
+  23:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMicro.TIM_Prescaler=42-1;
+ 24600              		.loc 1 23 0
+ 24601 0020 0C4B     		ldr	r3, .L2
+ 24602 0022 4FF02902 		mov	r2, #41
+ 24603 0026 1A80     		strh	r2, [r3, #0]	@ movhi
+  24:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMicro.TIM_RepetitionCounter=0;
+ 24604              		.loc 1 24 0
+ 24605 0028 0A4B     		ldr	r3, .L2
+ 24606 002a 4FF00002 		mov	r2, #0
+ 24607 002e 9A72     		strb	r2, [r3, #10]
+  25:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMili.TIM_ClockDivision=TIM_CKD_DIV1;
+ 24608              		.loc 1 25 0
+ 24609 0030 094B     		ldr	r3, .L2+4
+ 24610 0032 4FF00002 		mov	r2, #0
+ 24611 0036 1A81     		strh	r2, [r3, #8]	@ movhi
+  26:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMili.TIM_CounterMode=TIM_CounterMode_Up;
+ 24612              		.loc 1 26 0
+ 24613 0038 074B     		ldr	r3, .L2+4
+ 24614 003a 4FF00002 		mov	r2, #0
+ 24615 003e 5A80     		strh	r2, [r3, #2]	@ movhi
+  27:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMili.TIM_Prescaler=42000-1;
+ 24616              		.loc 1 27 0
+ 24617 0040 054B     		ldr	r3, .L2+4
+ 24618 0042 4AF20F42 		movw	r2, #41999
+ 24619 0046 1A80     		strh	r2, [r3, #0]	@ movhi
+  28:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMili.TIM_RepetitionCounter=0;
+ 24620              		.loc 1 28 0
+ 24621 0048 034B     		ldr	r3, .L2+4
+ 24622 004a 4FF00002 		mov	r2, #0
+ 24623 004e 9A72     		strb	r2, [r3, #10]
+  29:../Libraries/util/delay.c **** }
+ 24624              		.loc 1 29 0
+ 24625 0050 80BD     		pop	{r7, pc}
+ 24626              	.L3:
+ 24627 0052 00BF     		.align	2
+ 24628              	.L2:
+ 24629 0054 00000000 		.word	TIM_TimeBaseStructureMicro
+ 24630 0058 00000000 		.word	TIM_TimeBaseStructureMili
+ 24631              		.cfi_endproc
+ 24632              	.LFE110:
+ 24634              		.align	2
+ 24635              		.global	delay_us
+ 24636              		.thumb
+ 24637              		.thumb_func
+ 24639              	delay_us:
+ 24640              	.LFB111:
+  30:../Libraries/util/delay.c **** 
+  31:../Libraries/util/delay.c **** void delay_us(uint16_t waittime){
+ 24641              		.loc 1 31 0
+ 24642              		.cfi_startproc
+ 24643              		@ args = 0, pretend = 0, frame = 8
+ 24644              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24645 005c 80B5     		push	{r7, lr}
+ 24646              	.LCFI2:
+ 24647              		.cfi_def_cfa_offset 8
+ 24648 005e 82B0     		sub	sp, sp, #8
+ 24649              	.LCFI3:
+ 24650              		.cfi_def_cfa_offset 16
+ 24651 0060 00AF     		add	r7, sp, #0
+ 24652              		.cfi_offset 14, -4
+ 24653              		.cfi_offset 7, -8
+ 24654              	.LCFI4:
+ 24655              		.cfi_def_cfa_register 7
+ 24656 0062 0346     		mov	r3, r0
+ 24657 0064 FB80     		strh	r3, [r7, #6]	@ movhi
+  32:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMicro.TIM_Period=waittime*2;
+ 24658              		.loc 1 32 0
+ 24659 0066 FB88     		ldrh	r3, [r7, #6]
+ 24660 0068 4FEA4303 		lsl	r3, r3, #1
+ 24661 006c 1A46     		mov	r2, r3
+ 24662 006e 064B     		ldr	r3, .L5
+ 24663 0070 5A60     		str	r2, [r3, #4]
+  33:../Libraries/util/delay.c **** 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseStructureMicro);
+ 24664              		.loc 1 33 0
+ 24665 0072 4FF08040 		mov	r0, #1073741824
+ 24666 0076 0449     		ldr	r1, .L5
+ 24667 0078 FFF7FEFF 		bl	TIM_TimeBaseInit
+  34:../Libraries/util/delay.c **** 	delay_core();
+ 24668              		.loc 1 34 0
+ 24669 007c FFF7FEFF 		bl	delay_core
+  35:../Libraries/util/delay.c **** }
+ 24670              		.loc 1 35 0
+ 24671 0080 07F10807 		add	r7, r7, #8
+ 24672 0084 BD46     		mov	sp, r7
+ 24673 0086 80BD     		pop	{r7, pc}
+ 24674              	.L6:
+ 24675              		.align	2
+ 24676              	.L5:
+ 24677 0088 00000000 		.word	TIM_TimeBaseStructureMicro
+ 24678              		.cfi_endproc
+ 24679              	.LFE111:
+ 24681              		.align	2
+ 24682              		.global	delay_ms
+ 24683              		.thumb
+ 24684              		.thumb_func
+ 24686              	delay_ms:
+ 24687              	.LFB112:
+  36:../Libraries/util/delay.c **** 
+  37:../Libraries/util/delay.c **** void delay_ms(uint16_t waittime){
+ 24688              		.loc 1 37 0
+ 24689              		.cfi_startproc
+ 24690              		@ args = 0, pretend = 0, frame = 8
+ 24691              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24692 008c 80B5     		push	{r7, lr}
+ 24693              	.LCFI5:
+ 24694              		.cfi_def_cfa_offset 8
+ 24695 008e 82B0     		sub	sp, sp, #8
+ 24696              	.LCFI6:
+ 24697              		.cfi_def_cfa_offset 16
+ 24698 0090 00AF     		add	r7, sp, #0
+ 24699              		.cfi_offset 14, -4
+ 24700              		.cfi_offset 7, -8
+ 24701              	.LCFI7:
+ 24702              		.cfi_def_cfa_register 7
+ 24703 0092 0346     		mov	r3, r0
+ 24704 0094 FB80     		strh	r3, [r7, #6]	@ movhi
+  38:../Libraries/util/delay.c **** 	TIM_TimeBaseStructureMili.TIM_Period=waittime*2;
+ 24705              		.loc 1 38 0
+ 24706 0096 FB88     		ldrh	r3, [r7, #6]
+ 24707 0098 4FEA4303 		lsl	r3, r3, #1
+ 24708 009c 1A46     		mov	r2, r3
+ 24709 009e 064B     		ldr	r3, .L8
+ 24710 00a0 5A60     		str	r2, [r3, #4]
+  39:../Libraries/util/delay.c **** 	TIM_TimeBaseInit(TIM2,&TIM_TimeBaseStructureMili);
+ 24711              		.loc 1 39 0
+ 24712 00a2 4FF08040 		mov	r0, #1073741824
+ 24713 00a6 0449     		ldr	r1, .L8
+ 24714 00a8 FFF7FEFF 		bl	TIM_TimeBaseInit
+  40:../Libraries/util/delay.c **** 	delay_core();
+ 24715              		.loc 1 40 0
+ 24716 00ac FFF7FEFF 		bl	delay_core
+  41:../Libraries/util/delay.c **** }
+ 24717              		.loc 1 41 0
+ 24718 00b0 07F10807 		add	r7, r7, #8
+ 24719 00b4 BD46     		mov	sp, r7
+ 24720 00b6 80BD     		pop	{r7, pc}
+ 24721              	.L9:
+ 24722              		.align	2
+ 24723              	.L8:
+ 24724 00b8 00000000 		.word	TIM_TimeBaseStructureMili
+ 24725              		.cfi_endproc
+ 24726              	.LFE112:
+ 24728              		.align	2
+ 24729              		.global	delay_core
+ 24730              		.thumb
+ 24731              		.thumb_func
+ 24733              	delay_core:
+ 24734              	.LFB113:
+  42:../Libraries/util/delay.c **** 
+  43:../Libraries/util/delay.c **** void delay_core(){
+ 24735              		.loc 1 43 0
+ 24736              		.cfi_startproc
+ 24737              		@ args = 0, pretend = 0, frame = 0
+ 24738              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24739 00bc 80B5     		push	{r7, lr}
+ 24740              	.LCFI8:
+ 24741              		.cfi_def_cfa_offset 8
+ 24742 00be 00AF     		add	r7, sp, #0
+ 24743              		.cfi_offset 14, -4
+ 24744              		.cfi_offset 7, -8
+ 24745              	.LCFI9:
+ 24746              		.cfi_def_cfa_register 7
+  44:../Libraries/util/delay.c **** 	TIM_SetCounter(TIM2,1);
+ 24747              		.loc 1 44 0
+ 24748 00c0 4FF08040 		mov	r0, #1073741824
+ 24749 00c4 4FF00101 		mov	r1, #1
+ 24750 00c8 FFF7FEFF 		bl	TIM_SetCounter
+  45:../Libraries/util/delay.c **** 	TIM_Cmd(TIM2,ENABLE);
+ 24751              		.loc 1 45 0
+ 24752 00cc 4FF08040 		mov	r0, #1073741824
+ 24753 00d0 4FF00101 		mov	r1, #1
+ 24754 00d4 FFF7FEFF 		bl	TIM_Cmd
+  46:../Libraries/util/delay.c **** 
+  47:../Libraries/util/delay.c **** 	while(TIM_GetCounter(TIM2));
+ 24755              		.loc 1 47 0
+ 24756 00d8 00BF     		nop
+ 24757              	.L11:
+ 24758              		.loc 1 47 0 is_stmt 0 discriminator 1
+ 24759 00da 4FF08040 		mov	r0, #1073741824
+ 24760 00de FFF7FEFF 		bl	TIM_GetCounter
+ 24761 00e2 0346     		mov	r3, r0
+ 24762 00e4 002B     		cmp	r3, #0
+ 24763 00e6 F8D1     		bne	.L11
+  48:../Libraries/util/delay.c **** 
+  49:../Libraries/util/delay.c **** 	TIM_Cmd(TIM2,DISABLE);
+ 24764              		.loc 1 49 0 is_stmt 1
+ 24765 00e8 4FF08040 		mov	r0, #1073741824
+ 24766 00ec 4FF00001 		mov	r1, #0
+ 24767 00f0 FFF7FEFF 		bl	TIM_Cmd
+  50:../Libraries/util/delay.c **** }
+ 24768              		.loc 1 50 0
+ 24769 00f4 80BD     		pop	{r7, pc}
+ 24770              		.cfi_endproc
+ 24771              	.LFE113:
+ 24773              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 delay.c
+                            *COM*:0000000c TIM_TimeBaseStructureMicro
+                            *COM*:0000000c TIM_TimeBaseStructureMili
+     /tmp/ccWFFI1Y.s:24569  .text:00000000 $t
+     /tmp/ccWFFI1Y.s:24574  .text:00000000 delay_init
+     /tmp/ccWFFI1Y.s:24629  .text:00000054 $d
+     /tmp/ccWFFI1Y.s:24634  .text:0000005c $t
+     /tmp/ccWFFI1Y.s:24639  .text:0000005c delay_us
+     /tmp/ccWFFI1Y.s:24733  .text:000000bc delay_core
+     /tmp/ccWFFI1Y.s:24677  .text:00000088 $d
+     /tmp/ccWFFI1Y.s:24681  .text:0000008c $t
+     /tmp/ccWFFI1Y.s:24686  .text:0000008c delay_ms
+     /tmp/ccWFFI1Y.s:24724  .text:000000b8 $d
+     /tmp/ccWFFI1Y.s:24728  .text:000000bc $t
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphClockCmd
+TIM_TimeBaseInit
+TIM_SetCounter
+TIM_Cmd
+TIM_GetCounter

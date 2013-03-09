@@ -1,0 +1,662 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"stm32f4xx_wwdg.c"
+  23              	.Ltext0:
+  24              		.file 1 "../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c"
+ 24585              		.align	2
+ 24586              		.global	WWDG_DeInit
+ 24587              		.thumb
+ 24588              		.thumb_func
+ 24590              	WWDG_DeInit:
+ 24591              	.LFB110:
+   1:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+   2:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   ******************************************************************************
+   3:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @file    stm32f4xx_wwdg.c
+   4:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @author  MCD Application Team
+   5:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @version V1.0.2
+   6:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @date    05-March-2012
+   7:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief   This file provides firmware functions to manage the following 
+   8:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          functionalities of the Window watchdog (WWDG) peripheral:           
+   9:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *           - Prescaler, Refresh window and Counter configuration
+  10:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *           - WWDG activation
+  11:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *           - Interrupts and flags management
+  12:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             
+  13:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *  @verbatim
+  14:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *    
+  15:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          ===================================================================
+  16:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                                     WWDG features
+  17:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          ===================================================================
+  18:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                                        
+  19:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          Once enabled the WWDG generates a system reset on expiry of a programmed
+  20:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          time period, unless the program refreshes the counter (downcounter) 
+  21:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          before to reach 0x3F value (i.e. a reset is generated when the counter
+  22:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          value rolls over from 0x40 to 0x3F). 
+  23:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          An MCU reset is also generated if the counter value is refreshed
+  24:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          before the counter has reached the refresh window value. This 
+  25:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          implies that the counter must be refreshed in a limited window.
+  26:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *            
+  27:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          Once enabled the WWDG cannot be disabled except by a system reset.                    
+  28:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          
+  29:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          WWDGRST flag in RCC_CSR register can be used to inform when a WWDG
+  30:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          reset occurs.
+  31:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *            
+  32:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          The WWDG counter input clock is derived from the APB clock divided 
+  33:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          by a programmable prescaler.
+  34:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *              
+  35:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          WWDG counter clock = PCLK1 / Prescaler
+  36:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          WWDG timeout = (WWDG counter clock) * (counter value)
+  37:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                      
+  38:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          Min-max timeout value @42 MHz(PCLK1): ~97.5 us / ~49.9 ms
+  39:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                            
+  40:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          ===================================================================
+  41:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                                 How to use this driver
+  42:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          =================================================================== 
+  43:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          1. Enable WWDG clock using RCC_APB1PeriphClockCmd(RCC_APB1Periph_WWDG, ENABLE) functio
+  44:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *            
+  45:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          2. Configure the WWDG prescaler using WWDG_SetPrescaler() function
+  46:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                           
+  47:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          3. Configure the WWDG refresh window using WWDG_SetWindowValue() function
+  48:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *            
+  49:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          4. Set the WWDG counter value and start it using WWDG_Enable() function.
+  50:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             When the WWDG is enabled the counter value should be configured to 
+  51:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             a value greater than 0x40 to prevent generating an immediate reset.     
+  52:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *            
+  53:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          5. Optionally you can enable the Early wakeup interrupt which is 
+  54:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             generated when the counter reach 0x40.
+  55:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             Once enabled this interrupt cannot be disabled except by a system reset.
+  56:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                 
+  57:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *          6. Then the application program must refresh the WWDG counter at regular
+  58:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             intervals during normal operation to prevent an MCU reset, using
+  59:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             WWDG_SetCounter() function. This operation must occur only when
+  60:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             the counter value is lower than the refresh window value, 
+  61:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *             programmed using WWDG_SetWindowValue().         
+  62:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  63:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *  @endverbatim  
+  64:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *                             
+  65:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   ******************************************************************************
+  66:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @attention
+  67:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  68:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * <h2><center>&copy; COPYRIGHT 2012 STMicroelectronics</center></h2>
+  69:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  70:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
+  71:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * You may not use this file except in compliance with the License.
+  72:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * You may obtain a copy of the License at:
+  73:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  74:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *        http://www.st.com/software_license_agreement_liberty_v2
+  75:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  76:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * Unless required by applicable law or agreed to in writing, software 
+  77:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * distributed under the License is distributed on an "AS IS" BASIS, 
+  78:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  79:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * See the License for the specific language governing permissions and
+  80:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * limitations under the License.
+  81:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *
+  82:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   ******************************************************************************
+  83:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+  84:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+  85:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Includes ------------------------------------------------------------------*/
+  86:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #include "stm32f4xx_wwdg.h"
+  87:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #include "stm32f4xx_rcc.h"
+  88:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+  89:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @addtogroup STM32F4xx_StdPeriph_Driver
+  90:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+  91:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+  92:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+  93:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @defgroup WWDG 
+  94:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief WWDG driver modules
+  95:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+  96:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+  97:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+  98:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private typedef -----------------------------------------------------------*/
+  99:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private define ------------------------------------------------------------*/
+ 100:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 101:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* ----------- WWDG registers bit address in the alias region ----------- */
+ 102:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define WWDG_OFFSET       (WWDG_BASE - PERIPH_BASE)
+ 103:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Alias word address of EWI bit */
+ 104:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define CFR_OFFSET        (WWDG_OFFSET + 0x04)
+ 105:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define EWI_BitNumber     0x09
+ 106:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define CFR_EWI_BB        (PERIPH_BB_BASE + (CFR_OFFSET * 32) + (EWI_BitNumber * 4))
+ 107:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 108:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* --------------------- WWDG registers bit mask ------------------------ */
+ 109:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* CFR register bit mask */
+ 110:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define CFR_WDGTB_MASK    ((uint32_t)0xFFFFFE7F)
+ 111:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define CFR_W_MASK        ((uint32_t)0xFFFFFF80)
+ 112:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** #define BIT_MASK          ((uint8_t)0x7F)
+ 113:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 114:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private macro -------------------------------------------------------------*/
+ 115:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private variables ---------------------------------------------------------*/
+ 116:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private function prototypes -----------------------------------------------*/
+ 117:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /* Private functions ---------------------------------------------------------*/
+ 118:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 119:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @defgroup WWDG_Private_Functions
+ 120:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+ 121:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 122:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 123:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @defgroup WWDG_Group1 Prescaler, Refresh window and Counter configuration functions
+ 124:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *  @brief   Prescaler, Refresh window and Counter configuration functions 
+ 125:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *
+ 126:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @verbatim   
+ 127:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================
+ 128:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****           Prescaler, Refresh window and Counter configuration functions
+ 129:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================  
+ 130:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 131:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @endverbatim
+ 132:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+ 133:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 134:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 135:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 136:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Deinitializes the WWDG peripheral registers to their default reset values.
+ 137:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  None
+ 138:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 139:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 140:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_DeInit(void)
+ 141:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24592              		.loc 1 141 0
+ 24593              		.cfi_startproc
+ 24594              		@ args = 0, pretend = 0, frame = 0
+ 24595              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24596 0000 80B5     		push	{r7, lr}
+ 24597              	.LCFI0:
+ 24598              		.cfi_def_cfa_offset 8
+ 24599 0002 00AF     		add	r7, sp, #0
+ 24600              		.cfi_offset 14, -4
+ 24601              		.cfi_offset 7, -8
+ 24602              	.LCFI1:
+ 24603              		.cfi_def_cfa_register 7
+ 142:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_WWDG, ENABLE);
+ 24604              		.loc 1 142 0
+ 24605 0004 4FF40060 		mov	r0, #2048
+ 24606 0008 4FF00101 		mov	r1, #1
+ 24607 000c FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 143:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   RCC_APB1PeriphResetCmd(RCC_APB1Periph_WWDG, DISABLE);
+ 24608              		.loc 1 143 0
+ 24609 0010 4FF40060 		mov	r0, #2048
+ 24610 0014 4FF00001 		mov	r1, #0
+ 24611 0018 FFF7FEFF 		bl	RCC_APB1PeriphResetCmd
+ 144:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24612              		.loc 1 144 0
+ 24613 001c 80BD     		pop	{r7, pc}
+ 24614              		.cfi_endproc
+ 24615              	.LFE110:
+ 24617 001e 00BF     		.align	2
+ 24618              		.global	WWDG_SetPrescaler
+ 24619              		.thumb
+ 24620              		.thumb_func
+ 24622              	WWDG_SetPrescaler:
+ 24623              	.LFB111:
+ 145:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 146:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 147:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Sets the WWDG Prescaler.
+ 148:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  WWDG_Prescaler: specifies the WWDG Prescaler.
+ 149:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   This parameter can be one of the following values:
+ 150:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *     @arg WWDG_Prescaler_1: WWDG counter clock = (PCLK1/4096)/1
+ 151:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *     @arg WWDG_Prescaler_2: WWDG counter clock = (PCLK1/4096)/2
+ 152:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *     @arg WWDG_Prescaler_4: WWDG counter clock = (PCLK1/4096)/4
+ 153:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *     @arg WWDG_Prescaler_8: WWDG counter clock = (PCLK1/4096)/8
+ 154:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 155:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 156:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_SetPrescaler(uint32_t WWDG_Prescaler)
+ 157:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24624              		.loc 1 157 0
+ 24625              		.cfi_startproc
+ 24626              		@ args = 0, pretend = 0, frame = 16
+ 24627              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24628              		@ link register save eliminated.
+ 24629 0020 80B4     		push	{r7}
+ 24630              	.LCFI2:
+ 24631              		.cfi_def_cfa_offset 4
+ 24632 0022 85B0     		sub	sp, sp, #20
+ 24633              	.LCFI3:
+ 24634              		.cfi_def_cfa_offset 24
+ 24635 0024 00AF     		add	r7, sp, #0
+ 24636              		.cfi_offset 7, -4
+ 24637              	.LCFI4:
+ 24638              		.cfi_def_cfa_register 7
+ 24639 0026 7860     		str	r0, [r7, #4]
+ 158:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   uint32_t tmpreg = 0;
+ 24640              		.loc 1 158 0
+ 24641 0028 4FF00003 		mov	r3, #0
+ 24642 002c FB60     		str	r3, [r7, #12]
+ 159:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Check the parameters */
+ 160:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   assert_param(IS_WWDG_PRESCALER(WWDG_Prescaler));
+ 161:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Clear WDGTB[1:0] bits */
+ 162:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   tmpreg = WWDG->CFR & CFR_WDGTB_MASK;
+ 24643              		.loc 1 162 0
+ 24644 002e 094B     		ldr	r3, .L3
+ 24645 0030 5B68     		ldr	r3, [r3, #4]
+ 24646 0032 23F4C073 		bic	r3, r3, #384
+ 24647 0036 FB60     		str	r3, [r7, #12]
+ 163:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Set WDGTB[1:0] bits according to WWDG_Prescaler value */
+ 164:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   tmpreg |= WWDG_Prescaler;
+ 24648              		.loc 1 164 0
+ 24649 0038 FA68     		ldr	r2, [r7, #12]
+ 24650 003a 7B68     		ldr	r3, [r7, #4]
+ 24651 003c 42EA0303 		orr	r3, r2, r3
+ 24652 0040 FB60     		str	r3, [r7, #12]
+ 165:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Store the new value */
+ 166:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   WWDG->CFR = tmpreg;
+ 24653              		.loc 1 166 0
+ 24654 0042 044B     		ldr	r3, .L3
+ 24655 0044 FA68     		ldr	r2, [r7, #12]
+ 24656 0046 5A60     		str	r2, [r3, #4]
+ 167:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24657              		.loc 1 167 0
+ 24658 0048 07F11407 		add	r7, r7, #20
+ 24659 004c BD46     		mov	sp, r7
+ 24660 004e 80BC     		pop	{r7}
+ 24661 0050 7047     		bx	lr
+ 24662              	.L4:
+ 24663 0052 00BF     		.align	2
+ 24664              	.L3:
+ 24665 0054 002C0040 		.word	1073753088
+ 24666              		.cfi_endproc
+ 24667              	.LFE111:
+ 24669              		.align	2
+ 24670              		.global	WWDG_SetWindowValue
+ 24671              		.thumb
+ 24672              		.thumb_func
+ 24674              	WWDG_SetWindowValue:
+ 24675              	.LFB112:
+ 168:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 169:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 170:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Sets the WWDG window value.
+ 171:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  WindowValue: specifies the window value to be compared to the downcounter.
+ 172:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   This parameter value must be lower than 0x80.
+ 173:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 174:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 175:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_SetWindowValue(uint8_t WindowValue)
+ 176:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24676              		.loc 1 176 0
+ 24677              		.cfi_startproc
+ 24678              		@ args = 0, pretend = 0, frame = 16
+ 24679              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24680              		@ link register save eliminated.
+ 24681 0058 80B4     		push	{r7}
+ 24682              	.LCFI5:
+ 24683              		.cfi_def_cfa_offset 4
+ 24684 005a 85B0     		sub	sp, sp, #20
+ 24685              	.LCFI6:
+ 24686              		.cfi_def_cfa_offset 24
+ 24687 005c 00AF     		add	r7, sp, #0
+ 24688              		.cfi_offset 7, -4
+ 24689              	.LCFI7:
+ 24690              		.cfi_def_cfa_register 7
+ 24691 005e 0346     		mov	r3, r0
+ 24692 0060 FB71     		strb	r3, [r7, #7]
+ 177:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   __IO uint32_t tmpreg = 0;
+ 24693              		.loc 1 177 0
+ 24694 0062 4FF00003 		mov	r3, #0
+ 24695 0066 FB60     		str	r3, [r7, #12]
+ 178:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 179:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Check the parameters */
+ 180:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   assert_param(IS_WWDG_WINDOW_VALUE(WindowValue));
+ 181:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Clear W[6:0] bits */
+ 182:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 183:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   tmpreg = WWDG->CFR & CFR_W_MASK;
+ 24696              		.loc 1 183 0
+ 24697 0068 094B     		ldr	r3, .L6
+ 24698 006a 5B68     		ldr	r3, [r3, #4]
+ 24699 006c 23F07F03 		bic	r3, r3, #127
+ 24700 0070 FB60     		str	r3, [r7, #12]
+ 184:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 185:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Set W[6:0] bits according to WindowValue value */
+ 186:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   tmpreg |= WindowValue & (uint32_t) BIT_MASK;
+ 24701              		.loc 1 186 0
+ 24702 0072 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 24703 0074 03F07F02 		and	r2, r3, #127
+ 24704 0078 FB68     		ldr	r3, [r7, #12]
+ 24705 007a 42EA0303 		orr	r3, r2, r3
+ 24706 007e FB60     		str	r3, [r7, #12]
+ 187:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 188:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Store the new value */
+ 189:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   WWDG->CFR = tmpreg;
+ 24707              		.loc 1 189 0
+ 24708 0080 034B     		ldr	r3, .L6
+ 24709 0082 FA68     		ldr	r2, [r7, #12]
+ 24710 0084 5A60     		str	r2, [r3, #4]
+ 190:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24711              		.loc 1 190 0
+ 24712 0086 07F11407 		add	r7, r7, #20
+ 24713 008a BD46     		mov	sp, r7
+ 24714 008c 80BC     		pop	{r7}
+ 24715 008e 7047     		bx	lr
+ 24716              	.L7:
+ 24717              		.align	2
+ 24718              	.L6:
+ 24719 0090 002C0040 		.word	1073753088
+ 24720              		.cfi_endproc
+ 24721              	.LFE112:
+ 24723              		.align	2
+ 24724              		.global	WWDG_EnableIT
+ 24725              		.thumb
+ 24726              		.thumb_func
+ 24728              	WWDG_EnableIT:
+ 24729              	.LFB113:
+ 191:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 192:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 193:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Enables the WWDG Early Wakeup interrupt(EWI).
+ 194:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @note   Once enabled this interrupt cannot be disabled except by a system reset.
+ 195:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  None
+ 196:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 197:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 198:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_EnableIT(void)
+ 199:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24730              		.loc 1 199 0
+ 24731              		.cfi_startproc
+ 24732              		@ args = 0, pretend = 0, frame = 0
+ 24733              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24734              		@ link register save eliminated.
+ 24735 0094 80B4     		push	{r7}
+ 24736              	.LCFI8:
+ 24737              		.cfi_def_cfa_offset 4
+ 24738 0096 00AF     		add	r7, sp, #0
+ 24739              		.cfi_offset 7, -4
+ 24740              	.LCFI9:
+ 24741              		.cfi_def_cfa_register 7
+ 200:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *(__IO uint32_t *) CFR_EWI_BB = (uint32_t)ENABLE;
+ 24742              		.loc 1 200 0
+ 24743 0098 034B     		ldr	r3, .L9
+ 24744 009a 4FF00102 		mov	r2, #1
+ 24745 009e 1A60     		str	r2, [r3, #0]
+ 201:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24746              		.loc 1 201 0
+ 24747 00a0 BD46     		mov	sp, r7
+ 24748 00a2 80BC     		pop	{r7}
+ 24749 00a4 7047     		bx	lr
+ 24750              	.L10:
+ 24751 00a6 00BF     		.align	2
+ 24752              	.L9:
+ 24753 00a8 A4800542 		.word	1107656868
+ 24754              		.cfi_endproc
+ 24755              	.LFE113:
+ 24757              		.align	2
+ 24758              		.global	WWDG_SetCounter
+ 24759              		.thumb
+ 24760              		.thumb_func
+ 24762              	WWDG_SetCounter:
+ 24763              	.LFB114:
+ 202:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 203:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 204:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Sets the WWDG counter value.
+ 205:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  Counter: specifies the watchdog counter value.
+ 206:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   This parameter must be a number between 0x40 and 0x7F (to prevent generating
+ 207:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   an immediate reset) 
+ 208:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 209:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 210:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_SetCounter(uint8_t Counter)
+ 211:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24764              		.loc 1 211 0
+ 24765              		.cfi_startproc
+ 24766              		@ args = 0, pretend = 0, frame = 8
+ 24767              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24768              		@ link register save eliminated.
+ 24769 00ac 80B4     		push	{r7}
+ 24770              	.LCFI10:
+ 24771              		.cfi_def_cfa_offset 4
+ 24772 00ae 83B0     		sub	sp, sp, #12
+ 24773              	.LCFI11:
+ 24774              		.cfi_def_cfa_offset 16
+ 24775 00b0 00AF     		add	r7, sp, #0
+ 24776              		.cfi_offset 7, -4
+ 24777              	.LCFI12:
+ 24778              		.cfi_def_cfa_register 7
+ 24779 00b2 0346     		mov	r3, r0
+ 24780 00b4 FB71     		strb	r3, [r7, #7]
+ 212:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Check the parameters */
+ 213:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   assert_param(IS_WWDG_COUNTER(Counter));
+ 214:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Write to T[6:0] bits to configure the counter value, no need to do
+ 215:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****      a read-modify-write; writing a 0 to WDGA bit does nothing */
+ 216:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   WWDG->CR = Counter & BIT_MASK;
+ 24781              		.loc 1 216 0
+ 24782 00b6 054B     		ldr	r3, .L12
+ 24783 00b8 FA79     		ldrb	r2, [r7, #7]	@ zero_extendqisi2
+ 24784 00ba 02F07F02 		and	r2, r2, #127
+ 24785 00be 1A60     		str	r2, [r3, #0]
+ 217:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24786              		.loc 1 217 0
+ 24787 00c0 07F10C07 		add	r7, r7, #12
+ 24788 00c4 BD46     		mov	sp, r7
+ 24789 00c6 80BC     		pop	{r7}
+ 24790 00c8 7047     		bx	lr
+ 24791              	.L13:
+ 24792 00ca 00BF     		.align	2
+ 24793              	.L12:
+ 24794 00cc 002C0040 		.word	1073753088
+ 24795              		.cfi_endproc
+ 24796              	.LFE114:
+ 24798              		.align	2
+ 24799              		.global	WWDG_Enable
+ 24800              		.thumb
+ 24801              		.thumb_func
+ 24803              	WWDG_Enable:
+ 24804              	.LFB115:
+ 218:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 219:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @}
+ 220:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 221:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 222:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @defgroup WWDG_Group2 WWDG activation functions
+ 223:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *  @brief   WWDG activation functions 
+ 224:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *
+ 225:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @verbatim   
+ 226:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================
+ 227:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****                        WWDG activation function
+ 228:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================  
+ 229:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 230:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @endverbatim
+ 231:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+ 232:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 233:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 234:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 235:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Enables WWDG and load the counter value.                  
+ 236:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  Counter: specifies the watchdog counter value.
+ 237:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   This parameter must be a number between 0x40 and 0x7F (to prevent generating
+ 238:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   *   an immediate reset)
+ 239:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 240:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 241:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_Enable(uint8_t Counter)
+ 242:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24805              		.loc 1 242 0
+ 24806              		.cfi_startproc
+ 24807              		@ args = 0, pretend = 0, frame = 8
+ 24808              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24809              		@ link register save eliminated.
+ 24810 00d0 80B4     		push	{r7}
+ 24811              	.LCFI13:
+ 24812              		.cfi_def_cfa_offset 4
+ 24813 00d2 83B0     		sub	sp, sp, #12
+ 24814              	.LCFI14:
+ 24815              		.cfi_def_cfa_offset 16
+ 24816 00d4 00AF     		add	r7, sp, #0
+ 24817              		.cfi_offset 7, -4
+ 24818              	.LCFI15:
+ 24819              		.cfi_def_cfa_register 7
+ 24820 00d6 0346     		mov	r3, r0
+ 24821 00d8 FB71     		strb	r3, [r7, #7]
+ 243:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   /* Check the parameters */
+ 244:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   assert_param(IS_WWDG_COUNTER(Counter));
+ 245:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   WWDG->CR = WWDG_CR_WDGA | Counter;
+ 24822              		.loc 1 245 0
+ 24823 00da 054B     		ldr	r3, .L15
+ 24824 00dc FA79     		ldrb	r2, [r7, #7]
+ 24825 00de 62F07F02 		orn	r2, r2, #127
+ 24826 00e2 D2B2     		uxtb	r2, r2
+ 24827 00e4 1A60     		str	r2, [r3, #0]
+ 246:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24828              		.loc 1 246 0
+ 24829 00e6 07F10C07 		add	r7, r7, #12
+ 24830 00ea BD46     		mov	sp, r7
+ 24831 00ec 80BC     		pop	{r7}
+ 24832 00ee 7047     		bx	lr
+ 24833              	.L16:
+ 24834              		.align	2
+ 24835              	.L15:
+ 24836 00f0 002C0040 		.word	1073753088
+ 24837              		.cfi_endproc
+ 24838              	.LFE115:
+ 24840              		.align	2
+ 24841              		.global	WWDG_GetFlagStatus
+ 24842              		.thumb
+ 24843              		.thumb_func
+ 24845              	WWDG_GetFlagStatus:
+ 24846              	.LFB116:
+ 247:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 248:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @}
+ 249:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 250:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 251:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /** @defgroup WWDG_Group3 Interrupts and flags management functions
+ 252:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *  @brief   Interrupts and flags management functions 
+ 253:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  *
+ 254:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @verbatim   
+ 255:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================
+ 256:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****                  Interrupts and flags management functions
+ 257:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****  ===============================================================================  
+ 258:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 259:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** @endverbatim
+ 260:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @{
+ 261:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 262:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 263:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 264:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Checks whether the Early Wakeup interrupt flag is set or not.
+ 265:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  None
+ 266:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval The new state of the Early Wakeup interrupt flag (SET or RESET)
+ 267:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 268:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** FlagStatus WWDG_GetFlagStatus(void)
+ 269:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24847              		.loc 1 269 0
+ 24848              		.cfi_startproc
+ 24849              		@ args = 0, pretend = 0, frame = 8
+ 24850              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24851              		@ link register save eliminated.
+ 24852 00f4 80B4     		push	{r7}
+ 24853              	.LCFI16:
+ 24854              		.cfi_def_cfa_offset 4
+ 24855 00f6 83B0     		sub	sp, sp, #12
+ 24856              	.LCFI17:
+ 24857              		.cfi_def_cfa_offset 16
+ 24858 00f8 00AF     		add	r7, sp, #0
+ 24859              		.cfi_offset 7, -4
+ 24860              	.LCFI18:
+ 24861              		.cfi_def_cfa_register 7
+ 270:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   FlagStatus bitstatus = RESET;
+ 24862              		.loc 1 270 0
+ 24863 00fa 4FF00003 		mov	r3, #0
+ 24864 00fe FB71     		strb	r3, [r7, #7]
+ 271:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****     
+ 272:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   if ((WWDG->SR) != (uint32_t)RESET)
+ 24865              		.loc 1 272 0
+ 24866 0100 084B     		ldr	r3, .L20
+ 24867 0102 9B68     		ldr	r3, [r3, #8]
+ 24868 0104 002B     		cmp	r3, #0
+ 24869 0106 03D0     		beq	.L18
+ 273:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   {
+ 274:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****     bitstatus = SET;
+ 24870              		.loc 1 274 0
+ 24871 0108 4FF00103 		mov	r3, #1
+ 24872 010c FB71     		strb	r3, [r7, #7]
+ 24873 010e 02E0     		b	.L19
+ 24874              	.L18:
+ 275:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   }
+ 276:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   else
+ 277:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   {
+ 278:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****     bitstatus = RESET;
+ 24875              		.loc 1 278 0
+ 24876 0110 4FF00003 		mov	r3, #0
+ 24877 0114 FB71     		strb	r3, [r7, #7]
+ 24878              	.L19:
+ 279:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   }
+ 280:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   return bitstatus;
+ 24879              		.loc 1 280 0
+ 24880 0116 FB79     		ldrb	r3, [r7, #7]	@ zero_extendqisi2
+ 281:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24881              		.loc 1 281 0
+ 24882 0118 1846     		mov	r0, r3
+ 24883 011a 07F10C07 		add	r7, r7, #12
+ 24884 011e BD46     		mov	sp, r7
+ 24885 0120 80BC     		pop	{r7}
+ 24886 0122 7047     		bx	lr
+ 24887              	.L21:
+ 24888              		.align	2
+ 24889              	.L20:
+ 24890 0124 002C0040 		.word	1073753088
+ 24891              		.cfi_endproc
+ 24892              	.LFE116:
+ 24894              		.align	2
+ 24895              		.global	WWDG_ClearFlag
+ 24896              		.thumb
+ 24897              		.thumb_func
+ 24899              	WWDG_ClearFlag:
+ 24900              	.LFB117:
+ 282:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** 
+ 283:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** /**
+ 284:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @brief  Clears Early Wakeup interrupt flag.
+ 285:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @param  None
+ 286:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   * @retval None
+ 287:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   */
+ 288:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** void WWDG_ClearFlag(void)
+ 289:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** {
+ 24901              		.loc 1 289 0
+ 24902              		.cfi_startproc
+ 24903              		@ args = 0, pretend = 0, frame = 0
+ 24904              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24905              		@ link register save eliminated.
+ 24906 0128 80B4     		push	{r7}
+ 24907              	.LCFI19:
+ 24908              		.cfi_def_cfa_offset 4
+ 24909 012a 00AF     		add	r7, sp, #0
+ 24910              		.cfi_offset 7, -4
+ 24911              	.LCFI20:
+ 24912              		.cfi_def_cfa_register 7
+ 290:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c ****   WWDG->SR = (uint32_t)RESET;
+ 24913              		.loc 1 290 0
+ 24914 012c 034B     		ldr	r3, .L23
+ 24915 012e 4FF00002 		mov	r2, #0
+ 24916 0132 9A60     		str	r2, [r3, #8]
+ 291:../Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_wwdg.c **** }
+ 24917              		.loc 1 291 0
+ 24918 0134 BD46     		mov	sp, r7
+ 24919 0136 80BC     		pop	{r7}
+ 24920 0138 7047     		bx	lr
+ 24921              	.L24:
+ 24922 013a 00BF     		.align	2
+ 24923              	.L23:
+ 24924 013c 002C0040 		.word	1073753088
+ 24925              		.cfi_endproc
+ 24926              	.LFE117:
+ 24928              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 stm32f4xx_wwdg.c
+     /tmp/cccJ4Qux.s:24585  .text:00000000 $t
+     /tmp/cccJ4Qux.s:24590  .text:00000000 WWDG_DeInit
+     /tmp/cccJ4Qux.s:24622  .text:00000020 WWDG_SetPrescaler
+     /tmp/cccJ4Qux.s:24665  .text:00000054 $d
+     /tmp/cccJ4Qux.s:24669  .text:00000058 $t
+     /tmp/cccJ4Qux.s:24674  .text:00000058 WWDG_SetWindowValue
+     /tmp/cccJ4Qux.s:24719  .text:00000090 $d
+     /tmp/cccJ4Qux.s:24723  .text:00000094 $t
+     /tmp/cccJ4Qux.s:24728  .text:00000094 WWDG_EnableIT
+     /tmp/cccJ4Qux.s:24753  .text:000000a8 $d
+     /tmp/cccJ4Qux.s:24757  .text:000000ac $t
+     /tmp/cccJ4Qux.s:24762  .text:000000ac WWDG_SetCounter
+     /tmp/cccJ4Qux.s:24794  .text:000000cc $d
+     /tmp/cccJ4Qux.s:24798  .text:000000d0 $t
+     /tmp/cccJ4Qux.s:24803  .text:000000d0 WWDG_Enable
+     /tmp/cccJ4Qux.s:24836  .text:000000f0 $d
+     /tmp/cccJ4Qux.s:24840  .text:000000f4 $t
+     /tmp/cccJ4Qux.s:24845  .text:000000f4 WWDG_GetFlagStatus
+     /tmp/cccJ4Qux.s:24890  .text:00000124 $d
+     /tmp/cccJ4Qux.s:24894  .text:00000128 $t
+     /tmp/cccJ4Qux.s:24899  .text:00000128 WWDG_ClearFlag
+     /tmp/cccJ4Qux.s:24924  .text:0000013c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RCC_APB1PeriphResetCmd

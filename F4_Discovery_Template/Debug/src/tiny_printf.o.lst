@@ -1,0 +1,1070 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"tiny_printf.c"
+  23              	.Ltext0:
+  24              		.file 1 "../src/tiny_printf.c"
+ 2037              		.align	2
+ 2038              		.global	ts_itoa
+ 2039              		.thumb
+ 2040              		.thumb_func
+ 2042              	ts_itoa:
+ 2043              	.LFB0:
+   1:../src/tiny_printf.c **** /**
+   2:../src/tiny_printf.c **** *****************************************************************************
+   3:../src/tiny_printf.c **** **
+   4:../src/tiny_printf.c **** **  File        : tiny_printf.c
+   5:../src/tiny_printf.c **** **
+   6:../src/tiny_printf.c **** **  Abstract    : Atollic TrueSTUDIO Minimal printf/sprintf/fprintf
+   7:../src/tiny_printf.c **** **
+   8:../src/tiny_printf.c **** **                The argument contains a format string that may include
+   9:../src/tiny_printf.c **** **                conversion specifications. Each conversion specification
+  10:../src/tiny_printf.c **** **                is introduced by the character %, and ends with a
+  11:../src/tiny_printf.c **** **                conversion specifier.
+  12:../src/tiny_printf.c **** **
+  13:../src/tiny_printf.c **** **                The following conversion specifiers are supported
+  14:../src/tiny_printf.c **** **                cdisuxX%
+  15:../src/tiny_printf.c **** **
+  16:../src/tiny_printf.c **** **                Usage:
+  17:../src/tiny_printf.c **** **                c    character
+  18:../src/tiny_printf.c **** **                d,i  signed integer (-sign added, + sign not supported)
+  19:../src/tiny_printf.c **** **                s    character string
+  20:../src/tiny_printf.c **** **                u    unsigned integer as decimal
+  21:../src/tiny_printf.c **** **                x,X  unsigned integer as hexadecimal (uppercase letter)
+  22:../src/tiny_printf.c **** **                %    % is written (conversion specification is '%%')
+  23:../src/tiny_printf.c **** **
+  24:../src/tiny_printf.c **** **                Note:
+  25:../src/tiny_printf.c **** **                Character padding is not supported
+  26:../src/tiny_printf.c **** **
+  27:../src/tiny_printf.c **** **  Environment : Atollic TrueSTUDIO
+  28:../src/tiny_printf.c **** **
+  29:../src/tiny_printf.c **** **  Distribution: The file is distributed “as is,” without any warranty
+  30:../src/tiny_printf.c **** **                of any kind.
+  31:../src/tiny_printf.c **** **
+  32:../src/tiny_printf.c **** **  (c)Copyright Atollic AB.
+  33:../src/tiny_printf.c **** **  You may use this file as-is or modify it according to the needs of your
+  34:../src/tiny_printf.c **** **  project. Distribution of this file (unmodified or modified) is not
+  35:../src/tiny_printf.c **** **  permitted. Atollic AB permit registered Atollic TrueSTUDIO(R) users the
+  36:../src/tiny_printf.c **** **  rights to distribute the assembled, compiled & linked contents of this
+  37:../src/tiny_printf.c **** **  file as part of an application binary file, provided that it is built
+  38:../src/tiny_printf.c **** **  using the Atollic TrueSTUDIO(R) Pro toolchain.
+  39:../src/tiny_printf.c **** **
+  40:../src/tiny_printf.c **** *****************************************************************************
+  41:../src/tiny_printf.c **** */
+  42:../src/tiny_printf.c **** 
+  43:../src/tiny_printf.c **** /* Includes */
+  44:../src/tiny_printf.c **** #include <stdarg.h>
+  45:../src/tiny_printf.c **** #include <stdio.h>
+  46:../src/tiny_printf.c **** 
+  47:../src/tiny_printf.c **** /* External function prototypes (defined in syscalls.c) */
+  48:../src/tiny_printf.c **** extern int _write(int fd, char *str, int len);
+  49:../src/tiny_printf.c **** 
+  50:../src/tiny_printf.c **** /* Private function prototypes */
+  51:../src/tiny_printf.c **** void ts_itoa(char **buf, unsigned int d, int base);
+  52:../src/tiny_printf.c **** int ts_formatstring(char *buf, const char *fmt, va_list va);
+  53:../src/tiny_printf.c **** int ts_formatlength(const char *fmt, va_list va);
+  54:../src/tiny_printf.c **** 
+  55:../src/tiny_printf.c **** /* Private functions */
+  56:../src/tiny_printf.c **** 
+  57:../src/tiny_printf.c **** /**
+  58:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+  59:../src/tiny_printf.c **** **  Abstract: Convert integer to ascii
+  60:../src/tiny_printf.c **** **  Returns:  void
+  61:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+  62:../src/tiny_printf.c **** */
+  63:../src/tiny_printf.c **** void ts_itoa(char **buf, unsigned int d, int base)
+  64:../src/tiny_printf.c **** {
+ 2044              		.loc 1 64 0
+ 2045              		.cfi_startproc
+ 2046              		@ args = 0, pretend = 0, frame = 24
+ 2047              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2048              		@ link register save eliminated.
+ 2049 0000 80B4     		push	{r7}
+ 2050              	.LCFI0:
+ 2051              		.cfi_def_cfa_offset 4
+ 2052 0002 87B0     		sub	sp, sp, #28
+ 2053              	.LCFI1:
+ 2054              		.cfi_def_cfa_offset 32
+ 2055 0004 00AF     		add	r7, sp, #0
+ 2056              		.cfi_offset 7, -4
+ 2057              	.LCFI2:
+ 2058              		.cfi_def_cfa_register 7
+ 2059 0006 F860     		str	r0, [r7, #12]
+ 2060 0008 B960     		str	r1, [r7, #8]
+ 2061 000a 7A60     		str	r2, [r7, #4]
+  65:../src/tiny_printf.c **** 	int div = 1;
+ 2062              		.loc 1 65 0
+ 2063 000c 4FF00103 		mov	r3, #1
+ 2064 0010 7B61     		str	r3, [r7, #20]
+  66:../src/tiny_printf.c **** 	while (d/div >= base)
+ 2065              		.loc 1 66 0
+ 2066 0012 04E0     		b	.L2
+ 2067              	.L3:
+  67:../src/tiny_printf.c **** 		div *= base;
+ 2068              		.loc 1 67 0
+ 2069 0014 7B69     		ldr	r3, [r7, #20]
+ 2070 0016 7A68     		ldr	r2, [r7, #4]
+ 2071 0018 02FB03F3 		mul	r3, r2, r3
+ 2072 001c 7B61     		str	r3, [r7, #20]
+ 2073              	.L2:
+  66:../src/tiny_printf.c **** 	while (d/div >= base)
+ 2074              		.loc 1 66 0 discriminator 1
+ 2075 001e 7B69     		ldr	r3, [r7, #20]
+ 2076 0020 BA68     		ldr	r2, [r7, #8]
+ 2077 0022 B2FBF3F2 		udiv	r2, r2, r3
+ 2078 0026 7B68     		ldr	r3, [r7, #4]
+ 2079 0028 9A42     		cmp	r2, r3
+ 2080 002a F3D2     		bcs	.L3
+  68:../src/tiny_printf.c **** 
+  69:../src/tiny_printf.c **** 	while (div != 0)
+ 2081              		.loc 1 69 0
+ 2082 002c 2DE0     		b	.L4
+ 2083              	.L6:
+ 2084              	.LBB2:
+  70:../src/tiny_printf.c **** 	{
+  71:../src/tiny_printf.c **** 		int num = d/div;
+ 2085              		.loc 1 71 0
+ 2086 002e 7B69     		ldr	r3, [r7, #20]
+ 2087 0030 BA68     		ldr	r2, [r7, #8]
+ 2088 0032 B2FBF3F3 		udiv	r3, r2, r3
+ 2089 0036 3B61     		str	r3, [r7, #16]
+  72:../src/tiny_printf.c **** 		d = d%div;
+ 2090              		.loc 1 72 0
+ 2091 0038 7A69     		ldr	r2, [r7, #20]
+ 2092 003a BB68     		ldr	r3, [r7, #8]
+ 2093 003c B3FBF2F1 		udiv	r1, r3, r2
+ 2094 0040 02FB01F2 		mul	r2, r2, r1
+ 2095 0044 9B1A     		subs	r3, r3, r2
+ 2096 0046 BB60     		str	r3, [r7, #8]
+  73:../src/tiny_printf.c **** 		div /= base;
+ 2097              		.loc 1 73 0
+ 2098 0048 7A69     		ldr	r2, [r7, #20]
+ 2099 004a 7B68     		ldr	r3, [r7, #4]
+ 2100 004c 92FBF3F3 		sdiv	r3, r2, r3
+ 2101 0050 7B61     		str	r3, [r7, #20]
+  74:../src/tiny_printf.c **** 		if (num > 9)
+ 2102              		.loc 1 74 0
+ 2103 0052 3B69     		ldr	r3, [r7, #16]
+ 2104 0054 092B     		cmp	r3, #9
+ 2105 0056 0CDD     		ble	.L5
+  75:../src/tiny_printf.c **** 			*((*buf)++) = (num-10) + 'A';
+ 2106              		.loc 1 75 0
+ 2107 0058 FB68     		ldr	r3, [r7, #12]
+ 2108 005a 1B68     		ldr	r3, [r3, #0]
+ 2109 005c 3A69     		ldr	r2, [r7, #16]
+ 2110 005e D2B2     		uxtb	r2, r2
+ 2111 0060 02F13702 		add	r2, r2, #55
+ 2112 0064 D2B2     		uxtb	r2, r2
+ 2113 0066 1A70     		strb	r2, [r3, #0]
+ 2114 0068 03F10102 		add	r2, r3, #1
+ 2115 006c FB68     		ldr	r3, [r7, #12]
+ 2116 006e 1A60     		str	r2, [r3, #0]
+ 2117 0070 0BE0     		b	.L4
+ 2118              	.L5:
+  76:../src/tiny_printf.c **** 		else
+  77:../src/tiny_printf.c **** 			*((*buf)++) = num + '0';
+ 2119              		.loc 1 77 0
+ 2120 0072 FB68     		ldr	r3, [r7, #12]
+ 2121 0074 1B68     		ldr	r3, [r3, #0]
+ 2122 0076 3A69     		ldr	r2, [r7, #16]
+ 2123 0078 D2B2     		uxtb	r2, r2
+ 2124 007a 02F13002 		add	r2, r2, #48
+ 2125 007e D2B2     		uxtb	r2, r2
+ 2126 0080 1A70     		strb	r2, [r3, #0]
+ 2127 0082 03F10102 		add	r2, r3, #1
+ 2128 0086 FB68     		ldr	r3, [r7, #12]
+ 2129 0088 1A60     		str	r2, [r3, #0]
+ 2130              	.L4:
+ 2131              	.LBE2:
+  69:../src/tiny_printf.c **** 	while (div != 0)
+ 2132              		.loc 1 69 0 discriminator 1
+ 2133 008a 7B69     		ldr	r3, [r7, #20]
+ 2134 008c 002B     		cmp	r3, #0
+ 2135 008e CED1     		bne	.L6
+  78:../src/tiny_printf.c **** 	}
+  79:../src/tiny_printf.c **** }
+ 2136              		.loc 1 79 0
+ 2137 0090 07F11C07 		add	r7, r7, #28
+ 2138 0094 BD46     		mov	sp, r7
+ 2139 0096 80BC     		pop	{r7}
+ 2140 0098 7047     		bx	lr
+ 2141              		.cfi_endproc
+ 2142              	.LFE0:
+ 2144 009a 00BF     		.align	2
+ 2145              		.global	ts_formatstring
+ 2146              		.thumb
+ 2147              		.thumb_func
+ 2149              	ts_formatstring:
+ 2150              	.LFB1:
+  80:../src/tiny_printf.c **** 
+  81:../src/tiny_printf.c **** /**
+  82:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+  83:../src/tiny_printf.c **** **  Abstract: Writes arguments va to buffer buf according to format fmt
+  84:../src/tiny_printf.c **** **  Returns:  Length of string
+  85:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+  86:../src/tiny_printf.c **** */
+  87:../src/tiny_printf.c **** int ts_formatstring(char *buf, const char *fmt, va_list va)
+  88:../src/tiny_printf.c **** {
+ 2151              		.loc 1 88 0
+ 2152              		.cfi_startproc
+ 2153              		@ args = 0, pretend = 0, frame = 32
+ 2154              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2155 009c 80B5     		push	{r7, lr}
+ 2156              	.LCFI3:
+ 2157              		.cfi_def_cfa_offset 8
+ 2158 009e 88B0     		sub	sp, sp, #32
+ 2159              	.LCFI4:
+ 2160              		.cfi_def_cfa_offset 40
+ 2161 00a0 00AF     		add	r7, sp, #0
+ 2162              		.cfi_offset 14, -4
+ 2163              		.cfi_offset 7, -8
+ 2164              	.LCFI5:
+ 2165              		.cfi_def_cfa_register 7
+ 2166 00a2 F860     		str	r0, [r7, #12]
+ 2167 00a4 B960     		str	r1, [r7, #8]
+ 2168 00a6 7A60     		str	r2, [r7, #4]
+  89:../src/tiny_printf.c **** 	char *start_buf = buf;
+ 2169              		.loc 1 89 0
+ 2170 00a8 FB68     		ldr	r3, [r7, #12]
+ 2171 00aa 7B61     		str	r3, [r7, #20]
+  90:../src/tiny_printf.c **** 	while(*fmt)
+ 2172              		.loc 1 90 0
+ 2173 00ac 96E0     		b	.L8
+ 2174              	.L22:
+  91:../src/tiny_printf.c **** 	{
+  92:../src/tiny_printf.c **** 		/* Character needs formating? */
+  93:../src/tiny_printf.c **** 		if (*fmt == '%')
+ 2175              		.loc 1 93 0
+ 2176 00ae BB68     		ldr	r3, [r7, #8]
+ 2177 00b0 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2178 00b2 252B     		cmp	r3, #37
+ 2179 00b4 40F08780 		bne	.L9
+  94:../src/tiny_printf.c **** 		{
+  95:../src/tiny_printf.c **** 			switch (*(++fmt))
+ 2180              		.loc 1 95 0
+ 2181 00b8 BB68     		ldr	r3, [r7, #8]
+ 2182 00ba 03F10103 		add	r3, r3, #1
+ 2183 00be BB60     		str	r3, [r7, #8]
+ 2184 00c0 BB68     		ldr	r3, [r7, #8]
+ 2185 00c2 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2186 00c4 692B     		cmp	r3, #105
+ 2187 00c6 20D0     		beq	.L14
+ 2188 00c8 692B     		cmp	r3, #105
+ 2189 00ca 0BDC     		bgt	.L17
+ 2190 00cc 632B     		cmp	r3, #99
+ 2191 00ce 10D0     		beq	.L13
+ 2192 00d0 632B     		cmp	r3, #99
+ 2193 00d2 04DC     		bgt	.L18
+ 2194 00d4 252B     		cmp	r3, #37
+ 2195 00d6 69D0     		beq	.L11
+ 2196 00d8 582B     		cmp	r3, #88
+ 2197 00da 59D0     		beq	.L12
+ 2198 00dc 6EE0     		b	.L10
+ 2199              	.L18:
+ 2200 00de 642B     		cmp	r3, #100
+ 2201 00e0 13D0     		beq	.L14
+ 2202 00e2 6BE0     		b	.L10
+ 2203              	.L17:
+ 2204 00e4 752B     		cmp	r3, #117
+ 2205 00e6 45D0     		beq	.L16
+ 2206 00e8 782B     		cmp	r3, #120
+ 2207 00ea 51D0     		beq	.L12
+ 2208 00ec 732B     		cmp	r3, #115
+ 2209 00ee 2AD0     		beq	.L15
+ 2210 00f0 64E0     		b	.L10
+ 2211              	.L13:
+  96:../src/tiny_printf.c **** 			{
+  97:../src/tiny_printf.c **** 			  case 'c':
+  98:../src/tiny_printf.c **** 				*buf++ = va_arg(va, int);
+ 2212              		.loc 1 98 0
+ 2213 00f2 FB68     		ldr	r3, [r7, #12]
+ 2214 00f4 7A68     		ldr	r2, [r7, #4]
+ 2215 00f6 02F10401 		add	r1, r2, #4
+ 2216 00fa 7960     		str	r1, [r7, #4]
+ 2217 00fc 1268     		ldr	r2, [r2, #0]
+ 2218 00fe D2B2     		uxtb	r2, r2
+ 2219 0100 1A70     		strb	r2, [r3, #0]
+ 2220 0102 03F10103 		add	r3, r3, #1
+ 2221 0106 FB60     		str	r3, [r7, #12]
+  99:../src/tiny_printf.c **** 				break;
+ 2222              		.loc 1 99 0
+ 2223 0108 58E0     		b	.L10
+ 2224              	.L14:
+ 2225              	.LBB3:
+ 100:../src/tiny_printf.c **** 			  case 'd':
+ 101:../src/tiny_printf.c **** 			  case 'i':
+ 102:../src/tiny_printf.c **** 				{
+ 103:../src/tiny_printf.c **** 					signed int val = va_arg(va, signed int);
+ 2226              		.loc 1 103 0
+ 2227 010a 7B68     		ldr	r3, [r7, #4]
+ 2228 010c 03F10402 		add	r2, r3, #4
+ 2229 0110 7A60     		str	r2, [r7, #4]
+ 2230 0112 1B68     		ldr	r3, [r3, #0]
+ 2231 0114 FB61     		str	r3, [r7, #28]
+ 104:../src/tiny_printf.c **** 					if (val < 0)
+ 2232              		.loc 1 104 0
+ 2233 0116 FB69     		ldr	r3, [r7, #28]
+ 2234 0118 002B     		cmp	r3, #0
+ 2235 011a 0ADA     		bge	.L19
+ 105:../src/tiny_printf.c **** 					{
+ 106:../src/tiny_printf.c **** 						val *= -1;
+ 2236              		.loc 1 106 0
+ 2237 011c FB69     		ldr	r3, [r7, #28]
+ 2238 011e C3F10003 		rsb	r3, r3, #0
+ 2239 0122 FB61     		str	r3, [r7, #28]
+ 107:../src/tiny_printf.c **** 						*buf++ = '-';
+ 2240              		.loc 1 107 0
+ 2241 0124 FB68     		ldr	r3, [r7, #12]
+ 2242 0126 4FF02D02 		mov	r2, #45
+ 2243 012a 1A70     		strb	r2, [r3, #0]
+ 2244 012c 03F10103 		add	r3, r3, #1
+ 2245 0130 FB60     		str	r3, [r7, #12]
+ 2246              	.L19:
+ 108:../src/tiny_printf.c **** 					}
+ 109:../src/tiny_printf.c **** 					ts_itoa(&buf, val, 10);
+ 2247              		.loc 1 109 0
+ 2248 0132 FB69     		ldr	r3, [r7, #28]
+ 2249 0134 07F10C02 		add	r2, r7, #12
+ 2250 0138 1046     		mov	r0, r2
+ 2251 013a 1946     		mov	r1, r3
+ 2252 013c 4FF00A02 		mov	r2, #10
+ 2253 0140 FFF7FEFF 		bl	ts_itoa
+ 2254              	.LBE3:
+ 110:../src/tiny_printf.c **** 				}
+ 111:../src/tiny_printf.c **** 				break;
+ 2255              		.loc 1 111 0
+ 2256 0144 3AE0     		b	.L10
+ 2257              	.L15:
+ 2258              	.LBB4:
+ 112:../src/tiny_printf.c **** 			  case 's':
+ 113:../src/tiny_printf.c **** 				{
+ 114:../src/tiny_printf.c **** 					char * arg = va_arg(va, char *);
+ 2259              		.loc 1 114 0
+ 2260 0146 7B68     		ldr	r3, [r7, #4]
+ 2261 0148 03F10402 		add	r2, r3, #4
+ 2262 014c 7A60     		str	r2, [r7, #4]
+ 2263 014e 1B68     		ldr	r3, [r3, #0]
+ 2264 0150 BB61     		str	r3, [r7, #24]
+ 115:../src/tiny_printf.c **** 					while (*arg)
+ 2265              		.loc 1 115 0
+ 2266 0152 0AE0     		b	.L20
+ 2267              	.L21:
+ 116:../src/tiny_printf.c **** 					{
+ 117:../src/tiny_printf.c **** 						*buf++ = *arg++;
+ 2268              		.loc 1 117 0
+ 2269 0154 FB68     		ldr	r3, [r7, #12]
+ 2270 0156 BA69     		ldr	r2, [r7, #24]
+ 2271 0158 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+ 2272 015a 1A70     		strb	r2, [r3, #0]
+ 2273 015c 03F10103 		add	r3, r3, #1
+ 2274 0160 FB60     		str	r3, [r7, #12]
+ 2275 0162 BB69     		ldr	r3, [r7, #24]
+ 2276 0164 03F10103 		add	r3, r3, #1
+ 2277 0168 BB61     		str	r3, [r7, #24]
+ 2278              	.L20:
+ 115:../src/tiny_printf.c **** 					while (*arg)
+ 2279              		.loc 1 115 0 discriminator 1
+ 2280 016a BB69     		ldr	r3, [r7, #24]
+ 2281 016c 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2282 016e 002B     		cmp	r3, #0
+ 2283 0170 F0D1     		bne	.L21
+ 2284              	.LBE4:
+ 118:../src/tiny_printf.c **** 					}
+ 119:../src/tiny_printf.c **** 				}
+ 120:../src/tiny_printf.c **** 				break;
+ 2285              		.loc 1 120 0
+ 2286 0172 23E0     		b	.L10
+ 2287              	.L16:
+ 121:../src/tiny_printf.c **** 			  case 'u':
+ 122:../src/tiny_printf.c **** 					ts_itoa(&buf, va_arg(va, unsigned int), 10);
+ 2288              		.loc 1 122 0
+ 2289 0174 7B68     		ldr	r3, [r7, #4]
+ 2290 0176 03F10402 		add	r2, r3, #4
+ 2291 017a 7A60     		str	r2, [r7, #4]
+ 2292 017c 1B68     		ldr	r3, [r3, #0]
+ 2293 017e 07F10C02 		add	r2, r7, #12
+ 2294 0182 1046     		mov	r0, r2
+ 2295 0184 1946     		mov	r1, r3
+ 2296 0186 4FF00A02 		mov	r2, #10
+ 2297 018a FFF7FEFF 		bl	ts_itoa
+ 123:../src/tiny_printf.c **** 				break;
+ 2298              		.loc 1 123 0
+ 2299 018e 15E0     		b	.L10
+ 2300              	.L12:
+ 124:../src/tiny_printf.c **** 			  case 'x':
+ 125:../src/tiny_printf.c **** 			  case 'X':
+ 126:../src/tiny_printf.c **** 					ts_itoa(&buf, va_arg(va, int), 16);
+ 2301              		.loc 1 126 0
+ 2302 0190 7B68     		ldr	r3, [r7, #4]
+ 2303 0192 03F10402 		add	r2, r3, #4
+ 2304 0196 7A60     		str	r2, [r7, #4]
+ 2305 0198 1B68     		ldr	r3, [r3, #0]
+ 2306 019a 07F10C02 		add	r2, r7, #12
+ 2307 019e 1046     		mov	r0, r2
+ 2308 01a0 1946     		mov	r1, r3
+ 2309 01a2 4FF01002 		mov	r2, #16
+ 2310 01a6 FFF7FEFF 		bl	ts_itoa
+ 127:../src/tiny_printf.c **** 				break;
+ 2311              		.loc 1 127 0
+ 2312 01aa 07E0     		b	.L10
+ 2313              	.L11:
+ 128:../src/tiny_printf.c **** 			  case '%':
+ 129:../src/tiny_printf.c **** 				  *buf++ = '%';
+ 2314              		.loc 1 129 0
+ 2315 01ac FB68     		ldr	r3, [r7, #12]
+ 2316 01ae 4FF02502 		mov	r2, #37
+ 2317 01b2 1A70     		strb	r2, [r3, #0]
+ 2318 01b4 03F10103 		add	r3, r3, #1
+ 2319 01b8 FB60     		str	r3, [r7, #12]
+ 130:../src/tiny_printf.c **** 				  break;
+ 2320              		.loc 1 130 0
+ 2321 01ba 00BF     		nop
+ 2322              	.L10:
+ 131:../src/tiny_printf.c **** 			}
+ 132:../src/tiny_printf.c **** 			fmt++;
+ 2323              		.loc 1 132 0
+ 2324 01bc BB68     		ldr	r3, [r7, #8]
+ 2325 01be 03F10103 		add	r3, r3, #1
+ 2326 01c2 BB60     		str	r3, [r7, #8]
+ 2327 01c4 0AE0     		b	.L8
+ 2328              	.L9:
+ 133:../src/tiny_printf.c **** 		}
+ 134:../src/tiny_printf.c **** 		/* Else just copy */
+ 135:../src/tiny_printf.c **** 		else
+ 136:../src/tiny_printf.c **** 		{
+ 137:../src/tiny_printf.c **** 			*buf++ = *fmt++;
+ 2329              		.loc 1 137 0
+ 2330 01c6 FB68     		ldr	r3, [r7, #12]
+ 2331 01c8 BA68     		ldr	r2, [r7, #8]
+ 2332 01ca 1278     		ldrb	r2, [r2, #0]	@ zero_extendqisi2
+ 2333 01cc 1A70     		strb	r2, [r3, #0]
+ 2334 01ce 03F10103 		add	r3, r3, #1
+ 2335 01d2 FB60     		str	r3, [r7, #12]
+ 2336 01d4 BB68     		ldr	r3, [r7, #8]
+ 2337 01d6 03F10103 		add	r3, r3, #1
+ 2338 01da BB60     		str	r3, [r7, #8]
+ 2339              	.L8:
+  90:../src/tiny_printf.c **** 	while(*fmt)
+ 2340              		.loc 1 90 0 discriminator 1
+ 2341 01dc BB68     		ldr	r3, [r7, #8]
+ 2342 01de 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2343 01e0 002B     		cmp	r3, #0
+ 2344 01e2 7FF464AF 		bne	.L22
+ 138:../src/tiny_printf.c **** 		}
+ 139:../src/tiny_printf.c **** 	}
+ 140:../src/tiny_printf.c **** 	*buf = 0;
+ 2345              		.loc 1 140 0
+ 2346 01e6 FB68     		ldr	r3, [r7, #12]
+ 2347 01e8 4FF00002 		mov	r2, #0
+ 2348 01ec 1A70     		strb	r2, [r3, #0]
+ 141:../src/tiny_printf.c **** 
+ 142:../src/tiny_printf.c **** 	return (int)(buf - start_buf);
+ 2349              		.loc 1 142 0
+ 2350 01ee FB68     		ldr	r3, [r7, #12]
+ 2351 01f0 1A46     		mov	r2, r3
+ 2352 01f2 7B69     		ldr	r3, [r7, #20]
+ 2353 01f4 D31A     		subs	r3, r2, r3
+ 143:../src/tiny_printf.c **** }
+ 2354              		.loc 1 143 0
+ 2355 01f6 1846     		mov	r0, r3
+ 2356 01f8 07F12007 		add	r7, r7, #32
+ 2357 01fc BD46     		mov	sp, r7
+ 2358 01fe 80BD     		pop	{r7, pc}
+ 2359              		.cfi_endproc
+ 2360              	.LFE1:
+ 2362              		.align	2
+ 2363              		.global	ts_formatlength
+ 2364              		.thumb
+ 2365              		.thumb_func
+ 2367              	ts_formatlength:
+ 2368              	.LFB2:
+ 144:../src/tiny_printf.c **** 
+ 145:../src/tiny_printf.c **** 
+ 146:../src/tiny_printf.c **** /**
+ 147:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+ 148:../src/tiny_printf.c **** **  Abstract: Calculate maximum length of the resulting string from the
+ 149:../src/tiny_printf.c **** **            format string and va_list va
+ 150:../src/tiny_printf.c **** **  Returns:  Maximum length
+ 151:../src/tiny_printf.c **** **---------------------------------------------------------------------------
+ 152:../src/tiny_printf.c **** */
+ 153:../src/tiny_printf.c **** int ts_formatlength(const char *fmt, va_list va)
+ 154:../src/tiny_printf.c **** {
+ 2369              		.loc 1 154 0
+ 2370              		.cfi_startproc
+ 2371              		@ args = 0, pretend = 0, frame = 16
+ 2372              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2373              		@ link register save eliminated.
+ 2374 0200 80B4     		push	{r7}
+ 2375              	.LCFI6:
+ 2376              		.cfi_def_cfa_offset 4
+ 2377 0202 85B0     		sub	sp, sp, #20
+ 2378              	.LCFI7:
+ 2379              		.cfi_def_cfa_offset 24
+ 2380 0204 00AF     		add	r7, sp, #0
+ 2381              		.cfi_offset 7, -4
+ 2382              	.LCFI8:
+ 2383              		.cfi_def_cfa_register 7
+ 2384 0206 7860     		str	r0, [r7, #4]
+ 2385 0208 3960     		str	r1, [r7, #0]
+ 155:../src/tiny_printf.c **** 	int length = 0;
+ 2386              		.loc 1 155 0
+ 2387 020a 4FF00003 		mov	r3, #0
+ 2388 020e FB60     		str	r3, [r7, #12]
+ 156:../src/tiny_printf.c **** 	while (*fmt)
+ 2389              		.loc 1 156 0
+ 2390 0210 96E0     		b	.L24
+ 2391              	.L36:
+ 157:../src/tiny_printf.c **** 	{
+ 158:../src/tiny_printf.c **** 		if (*fmt == '%')
+ 2392              		.loc 1 158 0
+ 2393 0212 7B68     		ldr	r3, [r7, #4]
+ 2394 0214 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2395 0216 252B     		cmp	r3, #37
+ 2396 0218 40F08A80 		bne	.L25
+ 159:../src/tiny_printf.c **** 		{
+ 160:../src/tiny_printf.c **** 			++fmt;
+ 2397              		.loc 1 160 0
+ 2398 021c 7B68     		ldr	r3, [r7, #4]
+ 2399 021e 03F10103 		add	r3, r3, #1
+ 2400 0222 7B60     		str	r3, [r7, #4]
+ 161:../src/tiny_printf.c **** 			switch (*fmt)
+ 2401              		.loc 1 161 0
+ 2402 0224 7B68     		ldr	r3, [r7, #4]
+ 2403 0226 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2404 0228 A3F15803 		sub	r3, r3, #88
+ 2405 022c 202B     		cmp	r3, #32
+ 2406 022e 7AD8     		bhi	.L26
+ 2407 0230 01A2     		adr	r2, .L31
+ 2408 0232 52F823F0 		ldr	pc, [r2, r3, lsl #2]
+ 2409 0236 00BF     		.align	2
+ 2410              	.L31:
+ 2411 0238 13030000 		.word	.L27+1
+ 2412 023c 27030000 		.word	.L26+1
+ 2413 0240 27030000 		.word	.L26+1
+ 2414 0244 27030000 		.word	.L26+1
+ 2415 0248 27030000 		.word	.L26+1
+ 2416 024c 27030000 		.word	.L26+1
+ 2417 0250 27030000 		.word	.L26+1
+ 2418 0254 27030000 		.word	.L26+1
+ 2419 0258 27030000 		.word	.L26+1
+ 2420 025c 27030000 		.word	.L26+1
+ 2421 0260 27030000 		.word	.L26+1
+ 2422 0264 BD020000 		.word	.L28+1
+ 2423 0268 CF020000 		.word	.L29+1
+ 2424 026c 27030000 		.word	.L26+1
+ 2425 0270 27030000 		.word	.L26+1
+ 2426 0274 27030000 		.word	.L26+1
+ 2427 0278 27030000 		.word	.L26+1
+ 2428 027c CF020000 		.word	.L29+1
+ 2429 0280 27030000 		.word	.L26+1
+ 2430 0284 27030000 		.word	.L26+1
+ 2431 0288 27030000 		.word	.L26+1
+ 2432 028c 27030000 		.word	.L26+1
+ 2433 0290 27030000 		.word	.L26+1
+ 2434 0294 27030000 		.word	.L26+1
+ 2435 0298 27030000 		.word	.L26+1
+ 2436 029c 27030000 		.word	.L26+1
+ 2437 02a0 27030000 		.word	.L26+1
+ 2438 02a4 E1020000 		.word	.L30+1
+ 2439 02a8 27030000 		.word	.L26+1
+ 2440 02ac CF020000 		.word	.L29+1
+ 2441 02b0 27030000 		.word	.L26+1
+ 2442 02b4 27030000 		.word	.L26+1
+ 2443 02b8 13030000 		.word	.L27+1
+ 2444              	.L28:
+ 162:../src/tiny_printf.c **** 			{
+ 163:../src/tiny_printf.c **** 			  case 'c':
+ 164:../src/tiny_printf.c **** 		  		  va_arg(va, int);
+ 2445              		.loc 1 164 0
+ 2446 02bc 3B68     		ldr	r3, [r7, #0]
+ 2447 02be 03F10403 		add	r3, r3, #4
+ 2448 02c2 3B60     		str	r3, [r7, #0]
+ 165:../src/tiny_printf.c **** 				  ++length;
+ 2449              		.loc 1 165 0
+ 2450 02c4 FB68     		ldr	r3, [r7, #12]
+ 2451 02c6 03F10103 		add	r3, r3, #1
+ 2452 02ca FB60     		str	r3, [r7, #12]
+ 166:../src/tiny_printf.c **** 				  break;
+ 2453              		.loc 1 166 0
+ 2454 02cc 34E0     		b	.L35
+ 2455              	.L29:
+ 167:../src/tiny_printf.c **** 			  case 'd':
+ 168:../src/tiny_printf.c **** 			  case 'i':
+ 169:../src/tiny_printf.c **** 			  case 'u':
+ 170:../src/tiny_printf.c **** 				  /* 32 bits integer is max 11 characters with minus sign */
+ 171:../src/tiny_printf.c **** 				  length += 11;
+ 2456              		.loc 1 171 0
+ 2457 02ce FB68     		ldr	r3, [r7, #12]
+ 2458 02d0 03F10B03 		add	r3, r3, #11
+ 2459 02d4 FB60     		str	r3, [r7, #12]
+ 172:../src/tiny_printf.c **** 				  va_arg(va, int);
+ 2460              		.loc 1 172 0
+ 2461 02d6 3B68     		ldr	r3, [r7, #0]
+ 2462 02d8 03F10403 		add	r3, r3, #4
+ 2463 02dc 3B60     		str	r3, [r7, #0]
+ 173:../src/tiny_printf.c **** 				  break;
+ 2464              		.loc 1 173 0
+ 2465 02de 2BE0     		b	.L35
+ 2466              	.L30:
+ 2467              	.LBB5:
+ 174:../src/tiny_printf.c **** 			  case 's':
+ 175:../src/tiny_printf.c **** 			  	  {
+ 176:../src/tiny_printf.c **** 			  		  char * str = va_arg(va, char *);
+ 2468              		.loc 1 176 0
+ 2469 02e0 3B68     		ldr	r3, [r7, #0]
+ 2470 02e2 03F10402 		add	r2, r3, #4
+ 2471 02e6 3A60     		str	r2, [r7, #0]
+ 2472 02e8 1B68     		ldr	r3, [r3, #0]
+ 2473 02ea BB60     		str	r3, [r7, #8]
+ 177:../src/tiny_printf.c **** 			  		  while (*str++)
+ 2474              		.loc 1 177 0
+ 2475 02ec 03E0     		b	.L33
+ 2476              	.L34:
+ 178:../src/tiny_printf.c **** 			  			  ++length;
+ 2477              		.loc 1 178 0
+ 2478 02ee FB68     		ldr	r3, [r7, #12]
+ 2479 02f0 03F10103 		add	r3, r3, #1
+ 2480 02f4 FB60     		str	r3, [r7, #12]
+ 2481              	.L33:
+ 177:../src/tiny_printf.c **** 			  		  while (*str++)
+ 2482              		.loc 1 177 0 discriminator 1
+ 2483 02f6 BB68     		ldr	r3, [r7, #8]
+ 2484 02f8 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2485 02fa 002B     		cmp	r3, #0
+ 2486 02fc 0CBF     		ite	eq
+ 2487 02fe 0023     		moveq	r3, #0
+ 2488 0300 0123     		movne	r3, #1
+ 2489 0302 DBB2     		uxtb	r3, r3
+ 2490 0304 BA68     		ldr	r2, [r7, #8]
+ 2491 0306 02F10102 		add	r2, r2, #1
+ 2492 030a BA60     		str	r2, [r7, #8]
+ 2493 030c 002B     		cmp	r3, #0
+ 2494 030e EED1     		bne	.L34
+ 2495              	.LBE5:
+ 179:../src/tiny_printf.c **** 			  	  }
+ 180:../src/tiny_printf.c **** 				  break;
+ 2496              		.loc 1 180 0
+ 2497 0310 12E0     		b	.L35
+ 2498              	.L27:
+ 181:../src/tiny_printf.c **** 			  case 'x':
+ 182:../src/tiny_printf.c **** 			  case 'X':
+ 183:../src/tiny_printf.c **** 				  /* 32 bits integer as hex is max 8 characters */
+ 184:../src/tiny_printf.c **** 				  length += 8;
+ 2499              		.loc 1 184 0
+ 2500 0312 FB68     		ldr	r3, [r7, #12]
+ 2501 0314 03F10803 		add	r3, r3, #8
+ 2502 0318 FB60     		str	r3, [r7, #12]
+ 185:../src/tiny_printf.c **** 				  va_arg(va, unsigned int);
+ 2503              		.loc 1 185 0
+ 2504 031a 3B68     		ldr	r3, [r7, #0]
+ 2505 031c 03F10403 		add	r3, r3, #4
+ 2506 0320 3B60     		str	r3, [r7, #0]
+ 186:../src/tiny_printf.c **** 				  break;
+ 2507              		.loc 1 186 0
+ 2508 0322 00BF     		nop
+ 2509 0324 08E0     		b	.L35
+ 2510              	.L26:
+ 187:../src/tiny_printf.c **** 			  default:
+ 188:../src/tiny_printf.c **** 				  ++length;
+ 2511              		.loc 1 188 0
+ 2512 0326 FB68     		ldr	r3, [r7, #12]
+ 2513 0328 03F10103 		add	r3, r3, #1
+ 2514 032c FB60     		str	r3, [r7, #12]
+ 189:../src/tiny_printf.c **** 				  break;
+ 2515              		.loc 1 189 0
+ 2516 032e 03E0     		b	.L35
+ 2517              	.L25:
+ 190:../src/tiny_printf.c **** 			}
+ 191:../src/tiny_printf.c **** 		}
+ 192:../src/tiny_printf.c **** 		else
+ 193:../src/tiny_printf.c **** 		{
+ 194:../src/tiny_printf.c **** 			++length;
+ 2518              		.loc 1 194 0
+ 2519 0330 FB68     		ldr	r3, [r7, #12]
+ 2520 0332 03F10103 		add	r3, r3, #1
+ 2521 0336 FB60     		str	r3, [r7, #12]
+ 2522              	.L35:
+ 195:../src/tiny_printf.c **** 		}
+ 196:../src/tiny_printf.c **** 		++fmt;
+ 2523              		.loc 1 196 0
+ 2524 0338 7B68     		ldr	r3, [r7, #4]
+ 2525 033a 03F10103 		add	r3, r3, #1
+ 2526 033e 7B60     		str	r3, [r7, #4]
+ 2527              	.L24:
+ 156:../src/tiny_printf.c **** 	while (*fmt)
+ 2528              		.loc 1 156 0 discriminator 1
+ 2529 0340 7B68     		ldr	r3, [r7, #4]
+ 2530 0342 1B78     		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2531 0344 002B     		cmp	r3, #0
+ 2532 0346 7FF464AF 		bne	.L36
+ 197:../src/tiny_printf.c **** 	}
+ 198:../src/tiny_printf.c **** 	return length;
+ 2533              		.loc 1 198 0
+ 2534 034a FB68     		ldr	r3, [r7, #12]
+ 199:../src/tiny_printf.c **** }
+ 2535              		.loc 1 199 0
+ 2536 034c 1846     		mov	r0, r3
+ 2537 034e 07F11407 		add	r7, r7, #20
+ 2538 0352 BD46     		mov	sp, r7
+ 2539 0354 80BC     		pop	{r7}
+ 2540 0356 7047     		bx	lr
+ 2541              		.cfi_endproc
+ 2542              	.LFE2:
+ 2544              		.align	2
+ 2545              		.global	sprintf
+ 2546              		.thumb
+ 2547              		.thumb_func
+ 2549              	sprintf:
+ 2550              	.LFB3:
+ 200:../src/tiny_printf.c **** 
+ 201:../src/tiny_printf.c **** /**
+ 202:../src/tiny_printf.c **** **===========================================================================
+ 203:../src/tiny_printf.c **** **  Abstract: Loads data from the given locations and writes them to the
+ 204:../src/tiny_printf.c **** **            given character string according to the format parameter.
+ 205:../src/tiny_printf.c **** **  Returns:  Number of bytes written
+ 206:../src/tiny_printf.c **** **===========================================================================
+ 207:../src/tiny_printf.c **** */
+ 208:../src/tiny_printf.c **** int sprintf(char *buf, const char *fmt, ...)
+ 209:../src/tiny_printf.c **** {
+ 2551              		.loc 1 209 0
+ 2552              		.cfi_startproc
+ 2553              		@ args = 4, pretend = 12, frame = 16
+ 2554              		@ frame_needed = 1, uses_anonymous_args = 1
+ 2555 0358 0EB4     		push	{r1, r2, r3}
+ 2556              	.LCFI9:
+ 2557              		.cfi_def_cfa_offset 12
+ 2558 035a 80B5     		push	{r7, lr}
+ 2559              	.LCFI10:
+ 2560              		.cfi_def_cfa_offset 20
+ 2561 035c 85B0     		sub	sp, sp, #20
+ 2562              	.LCFI11:
+ 2563              		.cfi_def_cfa_offset 40
+ 2564 035e 00AF     		add	r7, sp, #0
+ 2565              		.cfi_offset 14, -16
+ 2566              		.cfi_offset 7, -20
+ 2567              		.cfi_offset 3, -4
+ 2568              		.cfi_offset 2, -8
+ 2569              		.cfi_offset 1, -12
+ 2570              	.LCFI12:
+ 2571              		.cfi_def_cfa_register 7
+ 2572 0360 7860     		str	r0, [r7, #4]
+ 210:../src/tiny_printf.c **** 	int length;
+ 211:../src/tiny_printf.c **** 	va_list va;
+ 212:../src/tiny_printf.c **** 	va_start(va, fmt);
+ 2573              		.loc 1 212 0
+ 2574 0362 07F12003 		add	r3, r7, #32
+ 2575 0366 BB60     		str	r3, [r7, #8]
+ 213:../src/tiny_printf.c **** 	length = ts_formatstring(buf, fmt, va);
+ 2576              		.loc 1 213 0
+ 2577 0368 7868     		ldr	r0, [r7, #4]
+ 2578 036a F969     		ldr	r1, [r7, #28]
+ 2579 036c BA68     		ldr	r2, [r7, #8]
+ 2580 036e FFF7FEFF 		bl	ts_formatstring
+ 2581 0372 F860     		str	r0, [r7, #12]
+ 214:../src/tiny_printf.c **** 	va_end(va);
+ 215:../src/tiny_printf.c **** 	return length;
+ 2582              		.loc 1 215 0
+ 2583 0374 FB68     		ldr	r3, [r7, #12]
+ 216:../src/tiny_printf.c **** }
+ 2584              		.loc 1 216 0
+ 2585 0376 1846     		mov	r0, r3
+ 2586 0378 07F11407 		add	r7, r7, #20
+ 2587 037c BD46     		mov	sp, r7
+ 2588 037e BDE88040 		pop	{r7, lr}
+ 2589 0382 03B0     		add	sp, sp, #12
+ 2590 0384 7047     		bx	lr
+ 2591              		.cfi_endproc
+ 2592              	.LFE3:
+ 2594 0386 00BF     		.align	2
+ 2595              		.global	fprintf
+ 2596              		.thumb
+ 2597              		.thumb_func
+ 2599              	fprintf:
+ 2600              	.LFB4:
+ 217:../src/tiny_printf.c **** 
+ 218:../src/tiny_printf.c **** /**
+ 219:../src/tiny_printf.c **** **===========================================================================
+ 220:../src/tiny_printf.c **** **  Abstract: Loads data from the given locations and writes them to the
+ 221:../src/tiny_printf.c **** **            given file stream according to the format parameter.
+ 222:../src/tiny_printf.c **** **  Returns:  Number of bytes written
+ 223:../src/tiny_printf.c **** **===========================================================================
+ 224:../src/tiny_printf.c **** */
+ 225:../src/tiny_printf.c **** int fprintf(FILE * stream, const char *fmt, ...)
+ 226:../src/tiny_printf.c **** {
+ 2601              		.loc 1 226 0
+ 2602              		.cfi_startproc
+ 2603              		@ args = 4, pretend = 12, frame = 24
+ 2604              		@ frame_needed = 1, uses_anonymous_args = 1
+ 2605 0388 0EB4     		push	{r1, r2, r3}
+ 2606              	.LCFI13:
+ 2607              		.cfi_def_cfa_offset 12
+ 2608 038a 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 2609              	.LCFI14:
+ 2610              		.cfi_def_cfa_offset 40
+ 2611 038e 86B0     		sub	sp, sp, #24
+ 2612              	.LCFI15:
+ 2613              		.cfi_def_cfa_offset 64
+ 2614 0390 00AF     		add	r7, sp, #0
+ 2615              		.cfi_offset 14, -16
+ 2616              		.cfi_offset 9, -20
+ 2617              		.cfi_offset 8, -24
+ 2618              		.cfi_offset 7, -28
+ 2619              		.cfi_offset 6, -32
+ 2620              		.cfi_offset 5, -36
+ 2621              		.cfi_offset 4, -40
+ 2622              		.cfi_offset 3, -4
+ 2623              		.cfi_offset 2, -8
+ 2624              		.cfi_offset 1, -12
+ 2625              	.LCFI16:
+ 2626              		.cfi_def_cfa_register 7
+ 2627 0392 7860     		str	r0, [r7, #4]
+ 227:../src/tiny_printf.c **** 	int length = 0;
+ 2628              		.loc 1 227 0
+ 2629 0394 4FF00003 		mov	r3, #0
+ 2630 0398 7B61     		str	r3, [r7, #20]
+ 228:../src/tiny_printf.c **** 	va_list va;
+ 229:../src/tiny_printf.c **** 	va_start(va, fmt);
+ 2631              		.loc 1 229 0
+ 2632 039a 07F13803 		add	r3, r7, #56
+ 2633 039e BB60     		str	r3, [r7, #8]
+ 230:../src/tiny_printf.c **** 	length = ts_formatlength(fmt, va);
+ 2634              		.loc 1 230 0
+ 2635 03a0 786B     		ldr	r0, [r7, #52]
+ 2636 03a2 B968     		ldr	r1, [r7, #8]
+ 2637 03a4 FFF7FEFF 		bl	ts_formatlength
+ 2638 03a8 7861     		str	r0, [r7, #20]
+ 231:../src/tiny_printf.c **** 	va_end(va);
+ 2639              		.loc 1 231 0
+ 2640 03aa 6B46     		mov	r3, sp
+ 2641 03ac 1E46     		mov	r6, r3
+ 2642              	.LBB6:
+ 232:../src/tiny_printf.c **** 	{
+ 233:../src/tiny_printf.c **** 		char buf[length];
+ 2643              		.loc 1 233 0
+ 2644 03ae 7969     		ldr	r1, [r7, #20]
+ 2645 03b0 01F1FF33 		add	r3, r1, #-1
+ 2646 03b4 3B61     		str	r3, [r7, #16]
+ 2647 03b6 0B46     		mov	r3, r1
+ 2648 03b8 1A46     		mov	r2, r3
+ 2649 03ba 4FF00003 		mov	r3, #0
+ 2650 03be 4FEA5270 		lsr	r0, r2, #29
+ 2651 03c2 4FEAC309 		lsl	r9, r3, #3
+ 2652 03c6 40EA0909 		orr	r9, r0, r9
+ 2653 03ca 4FEAC208 		lsl	r8, r2, #3
+ 2654 03ce 0B46     		mov	r3, r1
+ 2655 03d0 1A46     		mov	r2, r3
+ 2656 03d2 4FF00003 		mov	r3, #0
+ 2657 03d6 4FEA5270 		lsr	r0, r2, #29
+ 2658 03da 4FEAC305 		lsl	r5, r3, #3
+ 2659 03de 40EA0505 		orr	r5, r0, r5
+ 2660 03e2 4FEAC204 		lsl	r4, r2, #3
+ 2661 03e6 0B46     		mov	r3, r1
+ 2662 03e8 03F10703 		add	r3, r3, #7
+ 2663 03ec 03F10703 		add	r3, r3, #7
+ 2664 03f0 4FEAD303 		lsr	r3, r3, #3
+ 2665 03f4 4FEAC303 		lsl	r3, r3, #3
+ 2666 03f8 ADEB030D 		sub	sp, sp, r3
+ 2667 03fc 6B46     		mov	r3, sp
+ 2668 03fe 03F10703 		add	r3, r3, #7
+ 2669 0402 4FEAD303 		lsr	r3, r3, #3
+ 2670 0406 4FEAC303 		lsl	r3, r3, #3
+ 2671 040a FB60     		str	r3, [r7, #12]
+ 234:../src/tiny_printf.c **** 		va_start(va, fmt);
+ 2672              		.loc 1 234 0
+ 2673 040c 07F13803 		add	r3, r7, #56
+ 2674 0410 BB60     		str	r3, [r7, #8]
+ 235:../src/tiny_printf.c **** 		length = ts_formatstring(buf, fmt, va);
+ 2675              		.loc 1 235 0
+ 2676 0412 FB68     		ldr	r3, [r7, #12]
+ 2677 0414 1846     		mov	r0, r3
+ 2678 0416 796B     		ldr	r1, [r7, #52]
+ 2679 0418 BA68     		ldr	r2, [r7, #8]
+ 2680 041a FFF7FEFF 		bl	ts_formatstring
+ 2681 041e 7861     		str	r0, [r7, #20]
+ 236:../src/tiny_printf.c **** 		length = _write(stream->_file, buf, length);
+ 2682              		.loc 1 236 0
+ 2683 0420 7B68     		ldr	r3, [r7, #4]
+ 2684 0422 DB89     		ldrh	r3, [r3, #14]
+ 2685 0424 1AB2     		sxth	r2, r3
+ 2686 0426 FB68     		ldr	r3, [r7, #12]
+ 2687 0428 1046     		mov	r0, r2
+ 2688 042a 1946     		mov	r1, r3
+ 2689 042c 7A69     		ldr	r2, [r7, #20]
+ 2690 042e FFF7FEFF 		bl	_write
+ 2691 0432 7861     		str	r0, [r7, #20]
+ 237:../src/tiny_printf.c **** 		va_end(va);
+ 2692              		.loc 1 237 0
+ 2693 0434 B546     		mov	sp, r6
+ 2694              	.LBE6:
+ 238:../src/tiny_printf.c **** 	}
+ 239:../src/tiny_printf.c **** 	return length;
+ 2695              		.loc 1 239 0
+ 2696 0436 7B69     		ldr	r3, [r7, #20]
+ 240:../src/tiny_printf.c **** }
+ 2697              		.loc 1 240 0
+ 2698 0438 1846     		mov	r0, r3
+ 2699 043a 07F11807 		add	r7, r7, #24
+ 2700 043e BD46     		mov	sp, r7
+ 2701 0440 BDE8F043 		pop	{r4, r5, r6, r7, r8, r9, lr}
+ 2702 0444 03B0     		add	sp, sp, #12
+ 2703 0446 7047     		bx	lr
+ 2704              		.cfi_endproc
+ 2705              	.LFE4:
+ 2707              		.align	2
+ 2708              		.global	printf
+ 2709              		.thumb
+ 2710              		.thumb_func
+ 2712              	printf:
+ 2713              	.LFB5:
+ 241:../src/tiny_printf.c **** 
+ 242:../src/tiny_printf.c **** /**
+ 243:../src/tiny_printf.c **** **===========================================================================
+ 244:../src/tiny_printf.c **** **  Abstract: Loads data from the given locations and writes them to the
+ 245:../src/tiny_printf.c **** **            standard output according to the format parameter.
+ 246:../src/tiny_printf.c **** **  Returns:  Number of bytes written
+ 247:../src/tiny_printf.c **** **
+ 248:../src/tiny_printf.c **** **===========================================================================
+ 249:../src/tiny_printf.c **** */
+ 250:../src/tiny_printf.c **** int printf(const char *fmt, ...)
+ 251:../src/tiny_printf.c **** {
+ 2714              		.loc 1 251 0
+ 2715              		.cfi_startproc
+ 2716              		@ args = 4, pretend = 16, frame = 16
+ 2717              		@ frame_needed = 1, uses_anonymous_args = 1
+ 2718 0448 0FB4     		push	{r0, r1, r2, r3}
+ 2719              	.LCFI17:
+ 2720              		.cfi_def_cfa_offset 16
+ 2721 044a 2DE9F043 		push	{r4, r5, r6, r7, r8, r9, lr}
+ 2722              	.LCFI18:
+ 2723              		.cfi_def_cfa_offset 44
+ 2724 044e 85B0     		sub	sp, sp, #20
+ 2725              	.LCFI19:
+ 2726              		.cfi_def_cfa_offset 64
+ 2727 0450 00AF     		add	r7, sp, #0
+ 2728              		.cfi_offset 14, -20
+ 2729              		.cfi_offset 9, -24
+ 2730              		.cfi_offset 8, -28
+ 2731              		.cfi_offset 7, -32
+ 2732              		.cfi_offset 6, -36
+ 2733              		.cfi_offset 5, -40
+ 2734              		.cfi_offset 4, -44
+ 2735              		.cfi_offset 3, -4
+ 2736              		.cfi_offset 2, -8
+ 2737              		.cfi_offset 1, -12
+ 2738              		.cfi_offset 0, -16
+ 2739              	.LCFI20:
+ 2740              		.cfi_def_cfa_register 7
+ 252:../src/tiny_printf.c **** 	int length = 0;
+ 2741              		.loc 1 252 0
+ 2742 0452 4FF00003 		mov	r3, #0
+ 2743 0456 FB60     		str	r3, [r7, #12]
+ 253:../src/tiny_printf.c **** 	va_list va;
+ 254:../src/tiny_printf.c **** 	va_start(va, fmt);
+ 2744              		.loc 1 254 0
+ 2745 0458 07F13403 		add	r3, r7, #52
+ 2746 045c 3B60     		str	r3, [r7, #0]
+ 255:../src/tiny_printf.c **** 	length = ts_formatlength(fmt, va);
+ 2747              		.loc 1 255 0
+ 2748 045e 386B     		ldr	r0, [r7, #48]
+ 2749 0460 3968     		ldr	r1, [r7, #0]
+ 2750 0462 FFF7FEFF 		bl	ts_formatlength
+ 2751 0466 F860     		str	r0, [r7, #12]
+ 256:../src/tiny_printf.c **** 	va_end(va);
+ 2752              		.loc 1 256 0
+ 2753 0468 6B46     		mov	r3, sp
+ 2754 046a 1E46     		mov	r6, r3
+ 2755              	.LBB7:
+ 257:../src/tiny_printf.c **** 	{
+ 258:../src/tiny_printf.c **** 		char buf[length];
+ 2756              		.loc 1 258 0
+ 2757 046c F968     		ldr	r1, [r7, #12]
+ 2758 046e 01F1FF33 		add	r3, r1, #-1
+ 2759 0472 BB60     		str	r3, [r7, #8]
+ 2760 0474 0B46     		mov	r3, r1
+ 2761 0476 1A46     		mov	r2, r3
+ 2762 0478 4FF00003 		mov	r3, #0
+ 2763 047c 4FEA5270 		lsr	r0, r2, #29
+ 2764 0480 4FEAC309 		lsl	r9, r3, #3
+ 2765 0484 40EA0909 		orr	r9, r0, r9
+ 2766 0488 4FEAC208 		lsl	r8, r2, #3
+ 2767 048c 0B46     		mov	r3, r1
+ 2768 048e 1A46     		mov	r2, r3
+ 2769 0490 4FF00003 		mov	r3, #0
+ 2770 0494 4FEA5270 		lsr	r0, r2, #29
+ 2771 0498 4FEAC305 		lsl	r5, r3, #3
+ 2772 049c 40EA0505 		orr	r5, r0, r5
+ 2773 04a0 4FEAC204 		lsl	r4, r2, #3
+ 2774 04a4 0B46     		mov	r3, r1
+ 2775 04a6 03F10703 		add	r3, r3, #7
+ 2776 04aa 03F10703 		add	r3, r3, #7
+ 2777 04ae 4FEAD303 		lsr	r3, r3, #3
+ 2778 04b2 4FEAC303 		lsl	r3, r3, #3
+ 2779 04b6 ADEB030D 		sub	sp, sp, r3
+ 2780 04ba 6B46     		mov	r3, sp
+ 2781 04bc 03F10703 		add	r3, r3, #7
+ 2782 04c0 4FEAD303 		lsr	r3, r3, #3
+ 2783 04c4 4FEAC303 		lsl	r3, r3, #3
+ 2784 04c8 7B60     		str	r3, [r7, #4]
+ 259:../src/tiny_printf.c **** 		va_start(va, fmt);
+ 2785              		.loc 1 259 0
+ 2786 04ca 07F13403 		add	r3, r7, #52
+ 2787 04ce 3B60     		str	r3, [r7, #0]
+ 260:../src/tiny_printf.c **** 		length = ts_formatstring(buf, fmt, va);
+ 2788              		.loc 1 260 0
+ 2789 04d0 7B68     		ldr	r3, [r7, #4]
+ 2790 04d2 1846     		mov	r0, r3
+ 2791 04d4 396B     		ldr	r1, [r7, #48]
+ 2792 04d6 3A68     		ldr	r2, [r7, #0]
+ 2793 04d8 FFF7FEFF 		bl	ts_formatstring
+ 2794 04dc F860     		str	r0, [r7, #12]
+ 261:../src/tiny_printf.c **** 		length = _write(1, buf, length);
+ 2795              		.loc 1 261 0
+ 2796 04de 7B68     		ldr	r3, [r7, #4]
+ 2797 04e0 4FF00100 		mov	r0, #1
+ 2798 04e4 1946     		mov	r1, r3
+ 2799 04e6 FA68     		ldr	r2, [r7, #12]
+ 2800 04e8 FFF7FEFF 		bl	_write
+ 2801 04ec F860     		str	r0, [r7, #12]
+ 262:../src/tiny_printf.c **** 		va_end(va);
+ 2802              		.loc 1 262 0
+ 2803 04ee B546     		mov	sp, r6
+ 2804              	.LBE7:
+ 263:../src/tiny_printf.c **** 	}
+ 264:../src/tiny_printf.c **** 	return length;
+ 2805              		.loc 1 264 0
+ 2806 04f0 FB68     		ldr	r3, [r7, #12]
+ 265:../src/tiny_printf.c **** }
+ 2807              		.loc 1 265 0
+ 2808 04f2 1846     		mov	r0, r3
+ 2809 04f4 07F11407 		add	r7, r7, #20
+ 2810 04f8 BD46     		mov	sp, r7
+ 2811 04fa BDE8F043 		pop	{r4, r5, r6, r7, r8, r9, lr}
+ 2812 04fe 04B0     		add	sp, sp, #16
+ 2813 0500 7047     		bx	lr
+ 2814              		.cfi_endproc
+ 2815              	.LFE5:
+ 2817              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 tiny_printf.c
+     /tmp/cchP8c8Q.s:2037   .text:00000000 $t
+     /tmp/cchP8c8Q.s:2042   .text:00000000 ts_itoa
+     /tmp/cchP8c8Q.s:2149   .text:0000009c ts_formatstring
+     /tmp/cchP8c8Q.s:2367   .text:00000200 ts_formatlength
+     /tmp/cchP8c8Q.s:2411   .text:00000238 $d
+     /tmp/cchP8c8Q.s:2446   .text:000002bc $t
+     /tmp/cchP8c8Q.s:2549   .text:00000358 sprintf
+     /tmp/cchP8c8Q.s:2599   .text:00000388 fprintf
+     /tmp/cchP8c8Q.s:2712   .text:00000448 printf
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_write

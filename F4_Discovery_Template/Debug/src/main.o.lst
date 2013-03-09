@@ -1,0 +1,174 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"main.c"
+  23              	.Ltext0:
+  24              		.file 1 "../src/main.c"
+ 24567              		.align	2
+ 24568              		.global	main
+ 24569              		.thumb
+ 24570              		.thumb_func
+ 24572              	main:
+ 24573              	.LFB110:
+   1:../src/main.c **** /**
+   2:../src/main.c **** *****************************************************************************
+   3:../src/main.c **** **
+   4:../src/main.c **** **  File        : main.c
+   5:../src/main.c **** **
+   6:../src/main.c **** **  Abstract    : main function.
+   7:../src/main.c **** **
+   8:../src/main.c **** **  Functions   : main
+   9:../src/main.c **** **
+  10:../src/main.c **** **  Environment : Eclipse with Atollic TrueSTUDIO(R) Engine
+  11:../src/main.c **** **                STMicroelectronics STM32F4xx Standard Peripherals Library
+  12:../src/main.c **** **
+  13:../src/main.c **** **
+  14:../src/main.c **** **
+  15:../src/main.c **** *****************************************************************************
+  16:../src/main.c **** */
+  17:../src/main.c **** 
+  18:../src/main.c **** /* Includes */
+  19:../src/main.c **** #include "stm32f4xx.h"
+  20:../src/main.c **** #include "delay.h"
+  21:../src/main.c **** 
+  22:../src/main.c **** /* Private macro */
+  23:../src/main.c **** /* Private variables */
+  24:../src/main.c **** /* Private function prototypes */
+  25:../src/main.c **** /* Private functions */
+  26:../src/main.c **** 
+  27:../src/main.c **** /**
+  28:../src/main.c **** **===========================================================================
+  29:../src/main.c **** **
+  30:../src/main.c **** **  Abstract: main program
+  31:../src/main.c **** **
+  32:../src/main.c **** **===========================================================================
+  33:../src/main.c **** */
+  34:../src/main.c **** int main(void)
+  35:../src/main.c **** {
+ 24574              		.loc 1 35 0
+ 24575              		.cfi_startproc
+ 24576              		@ args = 0, pretend = 0, frame = 8
+ 24577              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24578              		@ link register save eliminated.
+ 24579 0000 80B4     		push	{r7}
+ 24580              	.LCFI0:
+ 24581              		.cfi_def_cfa_offset 4
+ 24582 0002 83B0     		sub	sp, sp, #12
+ 24583              	.LCFI1:
+ 24584              		.cfi_def_cfa_offset 16
+ 24585 0004 00AF     		add	r7, sp, #0
+ 24586              		.cfi_offset 7, -4
+ 24587              	.LCFI2:
+ 24588              		.cfi_def_cfa_register 7
+  36:../src/main.c ****   int i = 0;
+ 24589              		.loc 1 36 0
+ 24590 0006 4FF00003 		mov	r3, #0
+ 24591 000a 7B60     		str	r3, [r7, #4]
+ 24592              	.L2:
+  37:../src/main.c **** 
+  38:../src/main.c **** 
+  39:../src/main.c ****   /* Infinite loop */
+  40:../src/main.c ****   while (1)
+  41:../src/main.c ****   {
+  42:../src/main.c **** 	i++;
+ 24593              		.loc 1 42 0 discriminator 1
+ 24594 000c 7B68     		ldr	r3, [r7, #4]
+ 24595 000e 03F10103 		add	r3, r3, #1
+ 24596 0012 7B60     		str	r3, [r7, #4]
+  43:../src/main.c ****   }
+ 24597              		.loc 1 43 0 discriminator 1
+ 24598 0014 FAE7     		b	.L2
+ 24599              		.cfi_endproc
+ 24600              	.LFE110:
+ 24602 0016 00BF     		.align	2
+ 24603              		.global	EVAL_AUDIO_TransferComplete_CallBack
+ 24604              		.thumb
+ 24605              		.thumb_func
+ 24607              	EVAL_AUDIO_TransferComplete_CallBack:
+ 24608              	.LFB111:
+  44:../src/main.c **** }
+  45:../src/main.c **** 
+  46:../src/main.c **** 
+  47:../src/main.c **** void EVAL_AUDIO_TransferComplete_CallBack(uint32_t pBuffer, uint32_t Size){
+ 24609              		.loc 1 47 0
+ 24610              		.cfi_startproc
+ 24611              		@ args = 0, pretend = 0, frame = 8
+ 24612              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24613              		@ link register save eliminated.
+ 24614 0018 80B4     		push	{r7}
+ 24615              	.LCFI3:
+ 24616              		.cfi_def_cfa_offset 4
+ 24617 001a 83B0     		sub	sp, sp, #12
+ 24618              	.LCFI4:
+ 24619              		.cfi_def_cfa_offset 16
+ 24620 001c 00AF     		add	r7, sp, #0
+ 24621              		.cfi_offset 7, -4
+ 24622              	.LCFI5:
+ 24623              		.cfi_def_cfa_register 7
+ 24624 001e 7860     		str	r0, [r7, #4]
+ 24625 0020 3960     		str	r1, [r7, #0]
+  48:../src/main.c ****   /* TODO, implement your code here */
+  49:../src/main.c ****   return;
+  50:../src/main.c **** }
+ 24626              		.loc 1 50 0
+ 24627 0022 07F10C07 		add	r7, r7, #12
+ 24628 0026 BD46     		mov	sp, r7
+ 24629 0028 80BC     		pop	{r7}
+ 24630 002a 7047     		bx	lr
+ 24631              		.cfi_endproc
+ 24632              	.LFE111:
+ 24634              		.align	2
+ 24635              		.global	EVAL_AUDIO_GetSampleCallBack
+ 24636              		.thumb
+ 24637              		.thumb_func
+ 24639              	EVAL_AUDIO_GetSampleCallBack:
+ 24640              	.LFB112:
+  51:../src/main.c **** 
+  52:../src/main.c **** /*
+  53:../src/main.c ****  * Callback used by stm324xg_eval_audio_codec.c.
+  54:../src/main.c ****  * Refer to stm324xg_eval_audio_codec.h for more info.
+  55:../src/main.c ****  */
+  56:../src/main.c **** uint16_t EVAL_AUDIO_GetSampleCallBack(void){
+ 24641              		.loc 1 56 0
+ 24642              		.cfi_startproc
+ 24643              		@ args = 0, pretend = 0, frame = 0
+ 24644              		@ frame_needed = 1, uses_anonymous_args = 0
+ 24645              		@ link register save eliminated.
+ 24646 002c 80B4     		push	{r7}
+ 24647              	.LCFI6:
+ 24648              		.cfi_def_cfa_offset 4
+ 24649 002e 00AF     		add	r7, sp, #0
+ 24650              		.cfi_offset 7, -4
+ 24651              	.LCFI7:
+ 24652              		.cfi_def_cfa_register 7
+  57:../src/main.c ****   /* TODO, implement your code here */
+  58:../src/main.c ****   return -1;
+ 24653              		.loc 1 58 0
+ 24654 0030 4FF6FF73 		movw	r3, #65535
+  59:../src/main.c **** }
+ 24655              		.loc 1 59 0
+ 24656 0034 1846     		mov	r0, r3
+ 24657 0036 BD46     		mov	sp, r7
+ 24658 0038 80BC     		pop	{r7}
+ 24659 003a 7047     		bx	lr
+ 24660              		.cfi_endproc
+ 24661              	.LFE112:
+ 24663              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccbs5lSd.s:24567  .text:00000000 $t
+     /tmp/ccbs5lSd.s:24572  .text:00000000 main
+     /tmp/ccbs5lSd.s:24607  .text:00000018 EVAL_AUDIO_TransferComplete_CallBack
+     /tmp/ccbs5lSd.s:24639  .text:0000002c EVAL_AUDIO_GetSampleCallBack
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

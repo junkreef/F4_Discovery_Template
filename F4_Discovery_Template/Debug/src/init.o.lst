@@ -1,0 +1,58 @@
+   1              		.syntax unified
+   2              		.cpu cortex-m4
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 6
+  11              		.eabi_attribute 18, 4
+  12              		.thumb
+  13              		.file	"init.c"
+  23              	.Ltext0:
+  24              		.file 1 "../src/init.c"
+ 1000              		.align	2
+ 1001              		.global	_init
+ 1002              		.thumb
+ 1003              		.thumb_func
+ 1005              	_init:
+ 1006              	.LFB0:
+   1:../src/init.c **** /*
+   2:../src/init.c ****  * init.c
+   3:../src/init.c ****  *
+   4:../src/init.c ****  *  Created on: 2012/10/22
+   5:../src/init.c ****  *      Author: Junpei
+   6:../src/init.c ****  */
+   7:../src/init.c **** 
+   8:../src/init.c **** 
+   9:../src/init.c **** void _init(){
+ 1007              		.loc 1 9 0
+ 1008              		.cfi_startproc
+ 1009              		@ args = 0, pretend = 0, frame = 0
+ 1010              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1011              		@ link register save eliminated.
+ 1012 0000 80B4     		push	{r7}
+ 1013              	.LCFI0:
+ 1014              		.cfi_def_cfa_offset 4
+ 1015 0002 00AF     		add	r7, sp, #0
+ 1016              		.cfi_offset 7, -4
+ 1017              	.LCFI1:
+ 1018              		.cfi_def_cfa_register 7
+  10:../src/init.c **** 	//Dummy
+  11:../src/init.c **** }
+ 1019              		.loc 1 11 0
+ 1020 0004 BD46     		mov	sp, r7
+ 1021 0006 80BC     		pop	{r7}
+ 1022 0008 7047     		bx	lr
+ 1023              		.cfi_endproc
+ 1024              	.LFE0:
+ 1026              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 init.c
+     /tmp/ccTmDT3b.s:1000   .text:00000000 $t
+     /tmp/ccTmDT3b.s:1005   .text:00000000 _init
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS
